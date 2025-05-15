@@ -13,7 +13,7 @@ develop = false
 type = "git"
 url = "git@github.com:automationmojo/automojo-errors.git"
 reference = "main"
-resolved_reference = "5b883ec8ea74509a9d8a0f2bef1ccee92653836d"
+resolved_reference = "279ac701867318b1a1873cdccc57f17db04e6d7d"
 
 [[package]]
 name = "certifi"
