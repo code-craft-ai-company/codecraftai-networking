@@ -7,13 +7,9 @@
 """
 
 __author__ = "Myron Walker"
-__copyright__ = "Copyright 2023, Myron W Walker"
+__copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
-__version__ = "1.0.0"
-__maintainer__ = "Myron Walker"
-__email__ = "myron.walker@gmail.com"
-__status__ = "Development" # Prototype, Development or Production
-__license__ = "MIT"
+
 
 import platform
 import re
@@ -44,6 +40,7 @@ UPNP_GROUP_GLOBAL_ADDR6 = 'FF0E::1'
 
 UPNP_PORT = 1900
 
+UPNP_DEFAULT_SEARCH_WINDOW_LENGTH = 20
 
 CHARSET_IPV6_ADDR = 'ABCDEFabcdef0123456789:'
 

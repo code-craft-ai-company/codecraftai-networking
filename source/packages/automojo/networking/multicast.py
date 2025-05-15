@@ -7,13 +7,10 @@
 """
 
 __author__ = "Myron Walker"
-__copyright__ = "Copyright 2023, Myron W Walker"
+__copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 __version__ = "1.0.0"
-__maintainer__ = "Myron Walker"
-__email__ = "myron.walker@gmail.com"
-__status__ = "Development" # Prototype, Development or Production
-__license__ = "MIT"
+
 
 from typing import Optional
 
@@ -26,7 +23,7 @@ from automojo.networking.interfaces import get_ipv4_address
 from automojo.networking.interfaces import get_ipv6_address
 
 
-def create_multicast_socket(multicast_addr: str, port: int, *, bind_addr: str='0.0.0.0', family: socket.AddressFamily = socket.AF_INET,
+def create_multicast_listener_socket(multicast_addr: str, port: int, *, bind_addr: str='0.0.0.0', family: socket.AddressFamily = socket.AF_INET,
     ttl: Optional[int] = None, loop: Optional[int] = None, timeout: Optional[float] = None, apple_p2p: bool = False) -> socket.socket:
     """
         Create a socket for listening for multi-cast packets sent to the specified group on the specified interface
@@ -106,7 +103,7 @@ def create_multicast_socket(multicast_addr: str, port: int, *, bind_addr: str='0
 
     return sock
 
-def create_multicast_socket_for_iface(multicast_addr: str, ifname: str, port: int, family: socket.AddressFamily = socket.AF_INET,
+def create_multicast_listener_socket_for_iface(multicast_addr: str, ifname: str, port: int, family: socket.AddressFamily = socket.AF_INET,
     ttl: Optional[int] = None, loop: Optional[int] = None, timeout: Optional[float] = None, apple_p2p: bool = False) -> socket.socket:
     """
         Create a socket for listening for multi-cast packets sent to the specified group on the specified interface
