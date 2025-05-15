@@ -535,14 +535,14 @@ class UpnpPresence:
 
         sgate.clear()
         
-        self._presence_thread = threading.Thread(target=self._presence_thread_entry, name="mojo-ssdp-presence", args=(sgate,), daemon=True)
+        self._presence_thread = threading.Thread(target=self._presence_thread_entry, name="am-upnp-presence", args=(sgate,), daemon=True)
         self._presence_thread.start()
 
         sgate.wait()
 
         sgate.clear()
         
-        self._msearch_thread = threading.Thread(target=self._msearch_thread_entry, name="mojo-ssdp-search", args=(sgate,), daemon=True)
+        self._msearch_thread = threading.Thread(target=self._msearch_thread_entry, name="am-upnp-search", args=(sgate,), daemon=True)
         self._msearch_thread.start()
 
         sgate.wait()

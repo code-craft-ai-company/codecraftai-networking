@@ -2,7 +2,6 @@
 __author__ = "Myron Walker"
 __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
-__version__ = "1.0.0"
 
 
 def xml_format_spec_version(

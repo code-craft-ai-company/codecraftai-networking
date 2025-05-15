@@ -120,7 +120,7 @@ class UpnpSearchWindow:
             start_gate = threading.Event()
             start_gate.clear()
 
-            self._monitor_thread = threading.Thread(target=self._monitor_thread_entry, name="msearch-window-mon", args=(start_gate,), daemon=True)
+            self._monitor_thread = threading.Thread(target=self._monitor_thread_entry, name="am-msearch-window-mon", args=(start_gate,), daemon=True)
             self._monitor_thread.start()
 
             start_gate.wait()

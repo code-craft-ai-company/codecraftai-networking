@@ -162,14 +162,14 @@ class MdnsBrowser:
 
         sgate.clear()
         
-        self._presence_thread = threading.Thread(target=self._mdns_presence_thread_entry, name="mojo-mdns-presence", args=(sgate,), daemon=True)
+        self._presence_thread = threading.Thread(target=self._mdns_presence_thread_entry, name="am-mdns-presence", args=(sgate,), daemon=True)
         self._presence_thread.start()
 
         sgate.wait()
 
         sgate.clear()
         
-        self._msearch_thread = threading.Thread(target=self._mdns_search_thread_entry, name="mojo-mdns-search", args=(sgate,), daemon=True)
+        self._msearch_thread = threading.Thread(target=self._mdns_search_thread_entry, name="am-mdns-search", args=(sgate,), daemon=True)
         self._msearch_thread.start()
 
         sgate.wait()
