@@ -472,36 +472,39 @@ class UpnpPresence:
                     location = reply_info.pop("LOCATION")
 
                     device_desc = self._query_manager.query_device_details(location)
+                    if device_desc is not None:
 
-                    device_evidence = UpnpDeviceEvidence(usn=usn, status="alive", server=server, location=location, ip=from_ip, other=reply_info, presence=self)
+                        device_evidence = UpnpDeviceEvidence(usn=usn, status="alive", server=server, location=location, ip=from_ip, other=reply_info, presence=self)
 
-                    device_detail = UpnpDeviceDetail(device_evidence, device_desc)
+                        device_detail = UpnpDeviceDetail(device_evidence, device_desc)
 
-                    self._lock.acquire()
-                    try:
-                        if usn in self._inactive_devices:
-                            del self._inactive_devices[usn]
+                        self._lock.acquire()
+                        try:
+                            if usn in self._inactive_devices:
+                                del self._inactive_devices[usn]
 
-                        self._active_devices[usn] = device_detail
+                            self._active_devices[usn] = device_detail
 
-                        for wid, search_window_ref in self._search_windows.items():
+                            for wid, search_window_ref in self._search_windows.items():
 
-                            search_window = search_window_ref()
-                            if search_window is not None:
-                                # If the search window is still active, then add the device to the search window
-                                if search_window.is_active():
-                                    search_window.add_device(usn, device_detail)
+                                search_window = search_window_ref()
+                                if search_window is not None:
+                                    # If the search window is still active, then add the device to the search window
+                                    if search_window.is_active():
+                                        search_window.add_device(usn, device_detail)
+                                    else:
+                                        # If the search window is not active, then remove it from the list of search windows
+                                        del self._search_windows[wid]
                                 else:
-                                    # If the search window is not active, then remove it from the list of search windows
+                                    # If the search window reference is None, then remove it from the list of search windows
                                     del self._search_windows[wid]
-                            else:
-                                # If the search window reference is None, then remove it from the list of search windows
-                                del self._search_windows[wid]
 
-                    finally:
-                        self._lock.release()
+                        finally:
+                            self._lock.release()
 
-                    self._update_device("M-SEARCH", usn, "active", device_detail)
+                        self._update_device("M-SEARCH", usn, "active", device_detail)
+                    else:
+                        logger.error(f"Unable to get device description for {location}.")
 
         else:
             print(f"REPLY: from={from_ip} usn=<not found>")
