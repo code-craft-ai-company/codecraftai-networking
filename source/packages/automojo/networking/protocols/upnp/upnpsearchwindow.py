@@ -54,6 +54,7 @@ class UpnpSearchWindow:
         self._monitor_thread = None
 
         self._devices_found = {}
+        self._matching_devices = {}
         
         return
 
@@ -73,6 +74,15 @@ class UpnpSearchWindow:
         """
         return self._id
     
+    @property
+    def matching_devices(self) -> Dict[str, UpnpDeviceDetail]:
+        """
+            The dictionary of devices that matched the search window.  The keys are the USN identifiers of the devices and the values
+            are the :class:`UpnpDeviceDetail` objects that represent the devices.
+        """
+        rtnval = self._matching_devices.copy()
+        return rtnval
+
     @property
     def presence(self) -> "UpnpPresence":
         """
@@ -195,6 +205,7 @@ class UpnpSearchWindow:
                             hint_matched = False
                             for device in current_found.values():
                                 if nxt_hint.matches(device):
+                                    self._matching_devices[nxt_hint.get_hint()] = device
                                     hint_matched = True
                                     break
                             
