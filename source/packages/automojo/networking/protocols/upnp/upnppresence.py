@@ -487,7 +487,7 @@ class UpnpPresence:
 
                             for wid, search_window_ref in self._search_windows.items():
 
-                                search_window = search_window_ref()
+                                search_window: UpnpSearchWindow = search_window_ref()
                                 if search_window is not None:
                                     # If the search window is still active, then add the device to the search window
                                     if search_window.is_active():
