@@ -53,3 +53,10 @@ def get_arp_table() -> List[Dict[str, str]]:
     return arp_entries
 
 
+if __name__ == "__main__":
+    # Example usage
+    arp_table = get_arp_table()
+    for entry in arp_table:
+        print(f"IP Address: {entry['IPAddress']}, HW Type: {entry['HWType']}, MAC Address: {entry['MACAddress']}")
+
+
