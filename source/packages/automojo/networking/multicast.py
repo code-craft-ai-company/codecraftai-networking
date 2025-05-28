@@ -102,14 +102,14 @@ def create_multicast_listener_socket(multicast_addr: str, port: int, *, bind_add
 
     return sock
 
-def create_multicast_listener_socket_for_iface(multicast_addr: str, ifname: str, port: int, family: socket.AddressFamily = socket.AF_INET,
+def create_multicast_listener_socket_for_iface(ifname: str, multicast_addr: str, port: int, family: socket.AddressFamily = socket.AF_INET,
     ttl: Optional[int] = None, loop: Optional[int] = None, timeout: Optional[float] = None, apple_p2p: bool = False) -> socket.socket:
     """
         Create a socket for listening for multi-cast packets sent to the specified group on the specified interface
         and with the specified settings.
 
-        :param multicast_addr: The multicast group address the socket will be used to communicate with.
         :param ifname: The name if the interface to create the socket for.
+        :param multicast_addr: The multicast group address the socket will be used to communicate with.
         :param port: The port to bind the socket with.
         :param family: The internet address family for the socket, either (socket.AF_INET or socket.AF_INET6)
         :param ttl: The time to live that will be attached to the packets sent by this socket.
