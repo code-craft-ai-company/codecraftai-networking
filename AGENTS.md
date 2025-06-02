@@ -5,7 +5,7 @@ AI Agents working in this repository should refer to themselves as an agent name
 
 
 # Testing Conventions
-The 'automojo-credentials' package repository utilizes the 'unittest' framework in order to test the functionality of the code.
+The 'automojo-networking' package repository utilizes the 'unittest' framework in order to test the functionality of the code.
 
 # Code Naming Conventions
 The code naming conventions of this repository follows the [Automation Mojo Python Naming Conventions](https://github.com/automationmojo/automojo-docs/blob/main/userguide/10-01-naming-conventions.rst)
