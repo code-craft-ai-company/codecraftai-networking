@@ -24,6 +24,12 @@ The code in this repository is meant to be utilized by testing tools and test fr
 For all the code in this repository, follow the coding standards specified at [Coding Standards](https://github.com/automationmojo/automojo-docs/blob/main/userguide/10-00-coding-standards.rst)
 
 
+# Environment Setup
+When checking out the code for this repository in order to test changes, agents must:
+
+* run the 'repository-setup/rehome-repository' script.  It creates a needed '.env' file.
+* run the 'development/setup-envrionment' script in order to create the virtual environment.
+
 # Project Specific Rules
 
 
