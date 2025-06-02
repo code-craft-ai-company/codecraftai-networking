@@ -105,7 +105,7 @@ def get_correspondance_interface(ref_ip: str, ref_port: int, addr_family=socket.
 
     return corr_iface, corr_ip
 
-def get_correspondance_ip_address(ref_ip: str, ref_port: int, addr_family=socket.AF_INET) -> str:
+def get_correspondance_ip_address(ref_ip: str, ref_port: int=1, addr_family=socket.AF_INET) -> str:
     """
         Utilizes the TCP stack to make a connection to a remote computer and utilizes
         gets the socket address of the socket that connected to the remote computer.
@@ -128,9 +128,8 @@ def get_correspondance_ip_address(ref_ip: str, ref_port: int, addr_family=socket
     """
     corr_ip = None
 
-    sock = socket.socket(addr_family, socket.SOCK_STREAM)
+    sock = socket.socket(addr_family, socket.SOCK_DGRAM)
     try:
-        sock.settimeout(10)
         sock.connect((ref_ip, ref_port))
         corr_ip, _ = sock.getsockname()
     except Exception: # pylint: disable=broad-except
