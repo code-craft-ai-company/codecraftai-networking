@@ -12,7 +12,7 @@ The code naming conventions of this repository follows the [Automation Mojo Pyth
 
 
 # Code Structure
-The code structure of this repository follows the [Automation Mojo Python Code Structure Standards](https://github.com/automationmojo/automojo-docs/blob/main/userguide/02-01-python-repository-structure.rst)
+The code structure of this repository follows the [Automation Mojo Python Code Structure Standards](https://github.com/automationmojo/automojo-docs/blob/main/userguide/10-01-code-organization.rst)
 
 
 # Coding Standards
