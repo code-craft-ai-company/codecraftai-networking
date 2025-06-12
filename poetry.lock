@@ -11,9 +11,9 @@ develop = false
 
 [package.source]
 type = "git"
-url = "git@github.com:automationmojo/automojo-errors.git"
+url = "https://github.com/automationmojo/automojo-errors.git"
 reference = "main"
-resolved_reference = "91af243efdb6bcb4daf93dd1c78218c86b8d7632"
+resolved_reference = "0f4778d19bea6cf0a9d45c15c13259570e61efb6"
 
 [[package]]
 name = "certifi"
@@ -182,18 +182,18 @@ files = [
 
 [[package]]
 name = "requests"
-version = "2.32.3"
+version = "2.32.4"
 description = "Python HTTP for Humans."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "requests-2.32.3-py3-none-any.whl", hash = "sha256:70761cfe03c773ceb22aa2f671b4757976145175cdfca038c02654d061d6dcc6"},
-    {file = "requests-2.32.3.tar.gz", hash = "sha256:55365417734eb18255590a9ff9eb97e9e1da868d4ccd6402399eaf68af20a760"},
+    {file = "requests-2.32.4-py3-none-any.whl", hash = "sha256:27babd3cda2a6d50b30443204ee89830707d396671944c998b5975b031ac2b2c"},
+    {file = "requests-2.32.4.tar.gz", hash = "sha256:27d0316682c8a29834d3264820024b62a36942083d52caf2f14c0591336d3422"},
 ]
 
 [package.dependencies]
 certifi = ">=2017.4.17"
-charset-normalizer = ">=2,<4"
+charset_normalizer = ">=2,<4"
 idna = ">=2.5,<4"
 urllib3 = ">=1.21.1,<3"
 
@@ -221,4 +221,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<4.0"
-content-hash = "db72d41261cf174fe222f32a932b0eb9c5ab4dd83db0b702f027d2618d3fa156"
+content-hash = "b7b606035af83551ab4529f6c86337f0e2d6536ff5df81119203a125ffc846f6"
