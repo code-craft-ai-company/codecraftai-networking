@@ -13,6 +13,11 @@ __credits__ = []
 
 def broadcast_wake_on_lan_magic_message(brodcast_addr: str, mac_addr: str):
     """
-        [FF FF FF FF FF FF] + [mac] * 16   ( len 102 bytes )
+        Broadcasts a Wake-on-LAN magic message.
+
+        :param brodcast_addr: The broadcast address to send the magic packet to.
+        :param mac_addr: The MAC address of the device to wake.
+
+        :returns: ``None``
     """
     return
