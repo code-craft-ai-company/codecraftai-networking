@@ -7,6 +7,6 @@
 """
 
 __author__ = "Myron Walker"
-__copyright__ = "Copyright 2023, Automation Mojo LLC"
+__copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
