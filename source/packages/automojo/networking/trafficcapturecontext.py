@@ -21,6 +21,16 @@ import weakref
 class TrafficCaptureContext:
 
     def __init__(self, owner: object, identifier: str, fromip: str, destroy_method: Callable):
+        """
+            Initializes a :class:`TrafficCaptureContext` instance.
+
+            :param owner: The object that owns this context.
+            :param identifier: An identifier for the capture session.
+            :param fromip: The IP address being monitored.
+            :param destroy_method: Callback used to clean up the context.
+
+            :returns: ``None``
+        """
         self._owner_ref = weakref.ref(owner)
         self._identifier = identifier
         self._fromip = fromip
@@ -30,14 +40,33 @@ class TrafficCaptureContext:
         return
 
     def __enter__(self) -> "TrafficCaptureContext":
+        """
+            Enters the context manager.
+
+            :returns: ``self``
+        """
         return self
     
     def __exit__(self, ex_type: Type[BaseException], ex_inst: BaseException, ex_tb: TracebackType) -> bool:
+        """
+            Exits the context manager and triggers destruction of the context.
+
+            :param ex_type: The exception type if one occurred.
+            :param ex_inst: The exception instance.
+            :param ex_tb: The traceback associated with the exception.
+
+            :returns: ``False`` so any exception is re-raised.
+        """
         self._destroy_method(self)
         return False
 
     @property
     def captures(self):
+        """
+            Returns the list of captured request information.
+
+            :returns: A list of ``(headers, body)`` tuples.
+        """
         rtnlist = None
 
         self._lock.acquire()
@@ -50,17 +79,40 @@ class TrafficCaptureContext:
     
     @property
     def owner(self):
+        """
+            Returns the owner object for this context.
+
+            :returns: The owner object.
+        """
         return self._owner_ref()
 
     @property
     def fromip(self):
-        self._fromip
+        """
+            Returns the IP address being monitored.
+
+            :returns: The IP address as a string.
+        """
+        return self._fromip
 
     @property
     def identifier(self):
+        """
+            Returns the identifier for this capture session.
+
+            :returns: The session identifier.
+        """
         return self._identifier
 
     def append_capture(self, req_headers: dict, req_body: str):
+        """
+            Appends a captured request to the context.
+
+            :param req_headers: The request headers.
+            :param req_body: The request body.
+
+            :returns: ``None``
+        """
 
         self._lock.acquire()
         try:

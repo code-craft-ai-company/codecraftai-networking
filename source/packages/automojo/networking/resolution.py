@@ -23,7 +23,11 @@ from automojo.networking.constants import CHARSET_IPV6_ADDR, REGEX_IPV4_COMPONEN
 
 def expand_ipv6_addr(addr: str) -> str:
     """
-        Expand the wildcard '::' in an IPv6 address.
+        Expands the ``::`` wildcard in an IPv6 address.
+
+        :param addr: The IPv6 address to expand.
+
+        :returns: The fully expanded IPv6 address.
     """
     expanded = addr
 
@@ -63,6 +67,14 @@ def expand_ipv6_addr(addr: str) -> str:
 
 
 def get_arp_table(normalize_hwaddr: bool=False):
+    """
+        Retrieves the ARP table from ``/proc/net/arp``.
+
+        :param normalize_hwaddr: If ``True`` the hardware address is normalized by
+            removing colons and converting to upper case.
+
+        :returns: A dictionary keyed by hardware address with ARP table details.
+    """
     arp_table = {}
 
     with open('/proc/net/arp') as aif:
@@ -134,7 +146,13 @@ def is_ipv6_address(candidate: str) -> bool:
 
 def refresh_arp_table(exclude_interfaces: List=["lo"], include_interfaces: Optional[List[str]]=None):
     """
-        ping -c 5 -b 10.x.x.255
+        Refreshes the local ARP table by pinging hosts reachable from the
+        specified network interfaces.
+
+        :param exclude_interfaces: Interfaces that should not be scanned.
+        :param include_interfaces: Optional list of specific interfaces to scan.
+
+        :returns: ``None``
     """
 
     interface_list = None
