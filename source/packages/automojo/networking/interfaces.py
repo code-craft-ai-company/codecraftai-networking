@@ -1,9 +1,9 @@
 """
-.. module:: interfaces
-    :platform: Darwin, Linux, Unix, Windows
-    :synopsis: Contains helper functions for working with internet interfaces
+    .. module:: interfaces
+        :platform: Darwin, Linux, Unix, Windows
+        :synopsis: Contains helper functions for working with internet interfaces
 
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"

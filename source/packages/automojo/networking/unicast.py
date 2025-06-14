@@ -1,9 +1,9 @@
 """
-.. module:: unicast
-    :platform: Darwin, Linux, Unix, Windows
-    :synopsis: Contains helper functions for working with unicast sockets
+    .. module:: unicast
+        :platform: Darwin, Linux, Unix, Windows
+        :synopsis: Contains helper functions for working with unicast sockets
 
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"
