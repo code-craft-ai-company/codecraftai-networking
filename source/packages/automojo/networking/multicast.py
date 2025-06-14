@@ -1,9 +1,9 @@
 """
-.. module:: multicast
-    :platform: Darwin, Linux, Unix, Windows
-    :synopsis: Contains helper functions for working with multicast sockets
+    .. module:: multicast
+        :platform: Darwin, Linux, Unix, Windows
+        :synopsis: Contains helper functions for working with multicast sockets
 
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"

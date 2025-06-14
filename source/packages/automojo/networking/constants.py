@@ -1,9 +1,9 @@
 """
-.. module:: constants
-    :platform: Darwin, Linux, Unix, Windows
-    :synopsis: Module that contains constants associated with network activities from the test framework.
+    .. module:: constants
+        :platform: Darwin, Linux, Unix, Windows
+        :synopsis: Module that contains constants associated with network activities from the test framework.
 
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"

@@ -1,9 +1,9 @@
 """
-.. module:: resolution
-    :platform: Darwin, Linux, Unix, Windows
-    :synopsis: Contains helper functions for resolving ip addresses.
+    .. module:: resolution
+        :platform: Darwin, Linux, Unix, Windows
+        :synopsis: Contains helper functions for resolving ip addresses.
 
-.. moduleauthor:: Myron Walker <myron.walker@gmail.com>
+    .. moduleauthor:: Myron Walker <myron.walker@gmail.com>
 """
 
 __author__ = "Myron Walker"
