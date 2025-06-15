@@ -23,11 +23,11 @@ from automojo.networking.constants import CHARSET_IPV6_ADDR, REGEX_IPV4_COMPONEN
 
 def expand_ipv6_addr(addr: str) -> str:
     """
-        Expands the ``::`` wildcard in an IPv6 address.
+            Expands the ``::`` wildcard in an IPv6 address.
 
-        :param addr: The IPv6 address to expand.
+            :param addr: The IPv6 address to expand.
 
-        :returns: The fully expanded IPv6 address.
+            :returns: The fully expanded IPv6 address.
     """
     expanded = addr
 
@@ -68,12 +68,12 @@ def expand_ipv6_addr(addr: str) -> str:
 
 def get_arp_table(normalize_hwaddr: bool=False):
     """
-        Retrieves the ARP table from ``/proc/net/arp``.
+            Retrieves the ARP table from ``/proc/net/arp``.
 
-        :param normalize_hwaddr: If ``True`` the hardware address is normalized by
-            removing colons and converting to upper case.
+            :param normalize_hwaddr: If ``True`` the hardware address is normalized by
+                removing colons and converting to upper case.
 
-        :returns: A dictionary keyed by hardware address with ARP table details.
+            :returns: A dictionary keyed by hardware address with ARP table details.
     """
     arp_table = {}
 
@@ -92,11 +92,11 @@ def get_arp_table(normalize_hwaddr: bool=False):
 
 def is_ipv4_address(candidate: str) -> bool:
     """
-        Checks to see if 'candidate' is an ipv4 address.
+            Checks to see if ``candidate`` is an IPv4 address.
 
-        :param candidate: A string that is to be checked to see if it is a valid IPv4 address.
+            :param candidate: A string that is to be checked to see if it is a valid IPv4 address.
 
-        :returns: A boolean indicating if an IP address is an IPv4 address
+            :returns: A boolean indicating if an IP address is an IPv4 address
     """
     is_ipv4 = False
 
@@ -118,11 +118,11 @@ def is_ipv4_address(candidate: str) -> bool:
 
 def is_ipv6_address(candidate: str) -> bool:
     """
-        Checks to see if 'candidate' is an ipv6 address.
+            Checks to see if ``candidate`` is an IPv6 address.
 
-        :param candidate: A string that is to be checked to see if it is a valid IPv6 address.
+            :param candidate: A string that is to be checked to see if it is a valid IPv6 address.
 
-        :returns: A boolean indicating if an IP address is an IPv6 address
+            :returns: A boolean indicating if an IP address is an IPv6 address
     """
     is_ipv6 = False
 
@@ -146,13 +146,13 @@ def is_ipv6_address(candidate: str) -> bool:
 
 def refresh_arp_table(exclude_interfaces: List=["lo"], include_interfaces: Optional[List[str]]=None):
     """
-        Refreshes the local ARP table by pinging hosts reachable from the
-        specified network interfaces.
+            Refreshes the local ARP table by pinging hosts reachable from the
+            specified network interfaces.
 
-        :param exclude_interfaces: Interfaces that should not be scanned.
-        :param include_interfaces: Optional list of specific interfaces to scan.
+            :param exclude_interfaces: Interfaces that should not be scanned.
+            :param include_interfaces: Optional list of specific interfaces to scan.
 
-        :returns: ``None``
+            :returns: ``None``
     """
 
     interface_list = None
