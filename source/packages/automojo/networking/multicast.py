@@ -25,25 +25,26 @@ from automojo.networking.interfaces import get_ipv6_address
 def create_multicast_listener_socket(multicast_addr: str, port: int, *, bind_addr: str='0.0.0.0', family: socket.AddressFamily = socket.AF_INET,
     ttl: Optional[int] = None, loop: Optional[int] = None, timeout: Optional[float] = None, apple_p2p: bool = False) -> socket.socket:
     """
-        Create a socket for listening for multi-cast packets sent to the specified group on the specified interface
-        and with the specified settings.
+            Create a socket for listening for multicast packets sent to the specified group on the specified interface
+            and with the specified settings.
 
-        :param multicast_addr: The multicast group address the socket will be used to communicate with.
-        :param ifname: The name if the interface to create the socket for.
-        :param port: The port to bind the socket with.
-        :param bind_addr: The address to bind the multicast socket too. The default is all addresses.
-        :param family: The internet address family for the socket, either (socket.AF_INET or socket.AF_INET6)
-        :param ttl: The time to live that will be attached to the packets sent by this socket.
-                    0 = same host
-                    1 = same subnet
-                    32 = same site
-                    64 = same region
-                    128 = same continent
-                    255 = unrestricted scope
-        :param loop: Boolean value indicating if the loopback address should be included for traffic.
-        :param timeout: The socket timeout to assign to the socket
-        :param apple_p2p: A boolean value indicating if the socket option for Apple Peer-2-Peer should be set.
+            :param multicast_addr: The multicast group address the socket will be used to communicate with.
+            :param ifname: The name if the interface to create the socket for.
+            :param port: The port to bind the socket with.
+            :param bind_addr: The address to bind the multicast socket too. The default is all addresses.
+            :param family: The internet address family for the socket, either ``socket.AF_INET`` or ``socket.AF_INET6``
+            :param ttl: The time to live that will be attached to the packets sent by this socket.
+                        0 = same host
+                        1 = same subnet
+                        32 = same site
+                        64 = same region
+                        128 = same continent
+                        255 = unrestricted scope
+            :param loop: Boolean value indicating if the loopback address should be included for traffic.
+            :param timeout: The socket timeout to assign to the socket
+            :param apple_p2p: A boolean value indicating if the socket option for Apple Peer-2-Peer should be set.
 
+            :returns: A socket configured for multicast listening.
     """
 
     sock = None
@@ -105,24 +106,25 @@ def create_multicast_listener_socket(multicast_addr: str, port: int, *, bind_add
 def create_multicast_listener_socket_for_iface(ifname: str, multicast_addr: str, port: int, family: socket.AddressFamily = socket.AF_INET,
     ttl: Optional[int] = None, loop: Optional[int] = None, timeout: Optional[float] = None, apple_p2p: bool = False) -> socket.socket:
     """
-        Create a socket for listening for multi-cast packets sent to the specified group on the specified interface
-        and with the specified settings.
+            Create a socket for listening for multicast packets sent to the specified group on the specified interface
+            and with the specified settings.
 
-        :param ifname: The name if the interface to create the socket for.
-        :param multicast_addr: The multicast group address the socket will be used to communicate with.
-        :param port: The port to bind the socket with.
-        :param family: The internet address family for the socket, either (socket.AF_INET or socket.AF_INET6)
-        :param ttl: The time to live that will be attached to the packets sent by this socket.
-                    0 = same host
-                    1 = same subnet
-                    32 = same site
-                    64 = same region
-                    128 = same continent
-                    255 = unrestricted scope
-        :param loop: Boolean value indicating if the loopback address should be included for traffic.
-        :param timeout: The socket timeout to assign to the socket
-        :param apple_p2p: A boolean value indicating if the socket option for Apple Peer-2-Peer should be set.
+            :param ifname: The name if the interface to create the socket for.
+            :param multicast_addr: The multicast group address the socket will be used to communicate with.
+            :param port: The port to bind the socket with.
+            :param family: The internet address family for the socket, either ``socket.AF_INET`` or ``socket.AF_INET6``
+            :param ttl: The time to live that will be attached to the packets sent by this socket.
+                        0 = same host
+                        1 = same subnet
+                        32 = same site
+                        64 = same region
+                        128 = same continent
+                        255 = unrestricted scope
+            :param loop: Boolean value indicating if the loopback address should be included for traffic.
+            :param timeout: The socket timeout to assign to the socket
+            :param apple_p2p: A boolean value indicating if the socket option for Apple Peer-2-Peer should be set.
 
+            :returns: A socket configured for multicast listening.
     """
 
     bind_addr = None

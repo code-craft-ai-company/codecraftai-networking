@@ -19,6 +19,9 @@ import threading
 import weakref
 
 class TrafficCaptureContext:
+    """
+        Context manager used for capturing network traffic from a specific source.
+    """
 
     def __init__(self, owner: object, identifier: str, fromip: str, destroy_method: Callable):
         """

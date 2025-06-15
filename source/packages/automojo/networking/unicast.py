@@ -23,22 +23,23 @@ from automojo.networking.constants import IPPROTO_IPV6, SO_RECV_ANYIF
 def create_unicast_socket(target_addr: str, port: int, family: socket.AddressFamily = socket.AF_INET,
     ttl: Optional[int] = None, loop: Optional[int] = None, timeout: Optional[float] = None, apple_p2p: bool = False) -> socket.socket:
     """
-        Create a socket for listening for sending unicast packets to the specified target ip address.
+            Create a socket for sending unicast packets to the specified target IP address.
 
-        :param target_addr: The unicast network address the socket will be used to communicate with.
-        :param port: The port to bind the socket with.
-        :param family: The internet address family for the socket, either (socket.AF_INET or socket.AF_INET6)
-        :param ttl: The time to live that will be attached to the packets sent by this socket.
-                    0 = same host
-                    1 = same subnet
-                    32 = same site
-                    64 = same region
-                    128 = same continent
-                    255 = unrestricted scope
-        :param loop: Boolean value indicating if the loopback address should be included for traffic.
-        :param timeout: The socket timeout to assign to the socket
-        :param apple_p2p: A boolean value indicating if the socket option for Apple Peer-2-Peer should be set.
+            :param target_addr: The unicast network address the socket will be used to communicate with.
+            :param port: The port to bind the socket with.
+            :param family: The internet address family for the socket, either ``socket.AF_INET`` or ``socket.AF_INET6``
+            :param ttl: The time to live that will be attached to the packets sent by this socket.
+                        0 = same host
+                        1 = same subnet
+                        32 = same site
+                        64 = same region
+                        128 = same continent
+                        255 = unrestricted scope
+            :param loop: Boolean value indicating if the loopback address should be included for traffic.
+            :param timeout: The socket timeout to assign to the socket
+            :param apple_p2p: A boolean value indicating if the socket option for Apple Peer-2-Peer should be set.
 
+            :returns: A socket configured for unicast communication.
     """
 
     bind_addr = '0.0.0.0'
