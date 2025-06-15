@@ -17,9 +17,9 @@ import platform
 
 def get_arp_table() -> List[Dict[str, str]]:
     """
-    Get the ARP table from the system.
+        Get the ARP table from the system.
 
-    :returns: A list of dictionaries containing ARP table entries.
+        :returns: A list of dictionaries containing ARP table entries.
     """
 
     import subprocess

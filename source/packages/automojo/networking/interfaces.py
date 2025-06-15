@@ -35,11 +35,11 @@ class InterfaceClass(IntEnum):
 
 def encode_address(address: str) -> bytes:
     """
-            Encodes the address string to bytes.
+        Encodes the address string to bytes.
 
-            :param address: The IP address to encode.
+        :param address: The IP address to encode.
 
-            :returns: A packed string suitable for use with low-level network functions.
+        :returns: A packed string suitable for use with low-level network functions.
     """
     is_ipv6 = ':' in address
     address_family = socket.AF_INET6 if is_ipv6 else socket.AF_INET
@@ -47,11 +47,11 @@ def encode_address(address: str) -> bytes:
 
 def get_ipv4_address(ifname: str) -> Union[str, None]:
     """
-            Get the first IPv4 address associated with the specified interface name.
+        Get the first IPv4 address associated with the specified interface name.
 
-            :param ifname: The interface name to lookup the IP address for.
+        :param ifname: The interface name to lookup the IP address for.
 
-            :returns: The IPv4 address associated with the specified interface name or ``None``
+        :returns: The IPv4 address associated with the specified interface name or ``None``
     """
     addr = None
 
@@ -64,11 +64,11 @@ def get_ipv4_address(ifname: str) -> Union[str, None]:
 
 def get_ipv6_address(ifname: str) -> Union[str, None]:
     """
-            Get the first IPv6 address associated with the specified interface name.
+        Get the first IPv6 address associated with the specified interface name.
 
-            :param ifname: The interface name to lookup the IP address for.
+        :param ifname: The interface name to lookup the IP address for.
 
-            :returns: The IPv6 address associated with the specified interface name or ``None``
+        :returns: The IPv6 address associated with the specified interface name or ``None``
     """
     addr = None
 
@@ -81,24 +81,24 @@ def get_ipv6_address(ifname: str) -> Union[str, None]:
 
 def get_correspondance_interface(ref_ip: str, ref_port: int, addr_family=socket.AF_INET) -> Tuple[str, str]:
     """
-            Utilizes the TCP stack to make a connection to a remote computer and utilizes
-            gets the network interface that was used to connect to the remote computer.
-            This network interface is the network interface that is likely to be visible
-            to the remote computer and thus could be used to establish services that will
-            be visible to the remote computer.
+        Utilizes the TCP stack to make a connection to a remote computer and utilizes
+        gets the network interface that was used to connect to the remote computer.
+        This network interface is the network interface that is likely to be visible
+        to the remote computer and thus could be used to establish services that will
+        be visible to the remote computer.
 
-            :param ref_ip: An IP address of a computer that is on the subnet that you wish
-                            to find the correspondance ip address for and that is hosting a
-                            service that will accept a TCP connection from a client.
-            :param ref_port: The port number of a service on a computer that will accept a
-                              TCP connection so we can determine a path to the computer.
-            :param addr_family: The socket address family to utilize when making a remote
-                                connection to a host ``socket.AF_INET`` or ``socket.AF_INET6``.
-                                The address family used will determine the type of IP address
-                                returned from this function.
+        :param ref_ip: An IP address of a computer that is on the subnet that you wish
+            to find the correspondance ip address for and that is hosting a
+            service that will accept a TCP connection from a client.
+        :param ref_port: The port number of a service on a computer that will accept a
+            TCP connection so we can determine a path to the computer.
+        :param addr_family: The socket address family to utilize when making a remote
+            connection to a host ``socket.AF_INET`` or ``socket.AF_INET6``.
+            The address family used will determine the type of IP address
+            returned from this function.
 
-            :returns: The correspondance interface and IP address that can be used to setup a
-                      service that is visible to the reference IP address.
+        :returns: The correspondance interface and IP address that can be used to setup a
+            service that is visible to the reference IP address.
     """
 
     corr_iface = None
@@ -111,24 +111,24 @@ def get_correspondance_interface(ref_ip: str, ref_port: int, addr_family=socket.
 
 def get_correspondance_ip_address(ref_ip: str, ref_port: int=1, addr_family=socket.AF_INET) -> str:
     """
-            Utilizes the TCP stack to make a connection to a remote computer and utilizes
-            gets the socket address of the socket that connected to the remote computer.
-            This socket address is the address of the socket that is likely to be visible
-            to the remote computer and thus could be used to establish services that will
-            be visible to the remote computer.
+        Utilizes the TCP stack to make a connection to a remote computer and utilizes
+        gets the socket address of the socket that connected to the remote computer.
+        This socket address is the address of the socket that is likely to be visible
+        to the remote computer and thus could be used to establish services that will
+        be visible to the remote computer.
 
-            :param ref_ip: An IP address of a computer that is on the subnet that you wish
-                            to find the correspondance ip address for and that is hosting a
-                            service that will accept a TCP connection from a client.
-            :param ref_port: The port number of a service on a computer that will accept a
-                              TCP connection so we can determine a path to the computer.
-            :param addr_family: The socket address family to utilize when making a remote
-                                connection to a host ``socket.AF_INET`` or ``socket.AF_INET6``.
-                                The address family used will determine the type of IP address
-                                returned from this function.
+        :param ref_ip: An IP address of a computer that is on the subnet that you wish
+            to find the correspondance ip address for and that is hosting a
+            service that will accept a TCP connection from a client.
+        :param ref_port: The port number of a service on a computer that will accept a
+            TCP connection so we can determine a path to the computer.
+        :param addr_family: The socket address family to utilize when making a remote
+            connection to a host ``socket.AF_INET`` or ``socket.AF_INET6``.
+            The address family used will determine the type of IP address
+            returned from this function.
 
-            :returns: The correspondance IP address that can be used to setup a service that
-                      is visible to the reference IP address.
+        :returns: The correspondance IP address that can be used to setup a service that
+            is visible to the reference IP address.
     """
     corr_ip = None
 
@@ -146,11 +146,11 @@ def get_correspondance_ip_address(ref_ip: str, ref_port: int=1, addr_family=sock
 
 def get_interface_for_ip(if_addr: str) -> str:
     """
-            Finds the interface name on the local machine for the internet address provided.
+        Finds the interface name on the local machine for the internet address provided.
 
-            :param if_addr: The internet address on the local machine to find the interface name for.
+        :param if_addr: The internet address on the local machine to find the interface name for.
 
-            :returns: The ifname that corresponds to the address provided.
+        :returns: The ifname that corresponds to the address provided.
     """
     addr_info = socket.getaddrinfo(if_addr, 80)
     addr_family=addr_info[0][0]
@@ -175,9 +175,9 @@ def get_interface_for_ip(if_addr: str) -> str:
 
 def get_interface_class_table() -> Dict[str, InterfaceClass]:
     """
-            Creates a dictionary lookup table of interface names to :class:`InterfaceClass` enumerations.
+        Creates a dictionary lookup table of interface names to :class:`InterfaceClass` enumerations.
 
-            :returns: The table of interface names to interface class values.
+        :returns: The table of interface names to interface class values.
     """
 
     results = {}
@@ -191,11 +191,11 @@ def get_interface_class_table() -> Dict[str, InterfaceClass]:
 
 def get_interface_class(ifname: str) -> InterfaceClass:
     """
-            Returns an :class:`InterfaceClass` value for the interface name specified.
+        Returns an :class:`InterfaceClass` value for the interface name specified.
 
-            :param ifname: The name of the interface to determine the interface class for.
+        :param ifname: The name of the interface to determine the interface class for.
 
-            :returns: An :class:`InterfaceClass` that corresponds to the specified interface.
+        :returns: An :class:`InterfaceClass` that corresponds to the specified interface.
     """
 
     if_syscls_path = "/sys/class/net/{}".format(ifname)
@@ -226,9 +226,9 @@ def get_interface_class(ifname: str) -> InterfaceClass:
 
 def get_interface_names_of_class(ifcls_filter: InterfaceClass) -> List[str]:
     """
-            Gets a list of interface names of a given :class:`InterfaceClass`.
+        Gets a list of interface names of a given :class:`InterfaceClass`.
 
-            :returns: List of filtered interface names.
+        :returns: List of filtered interface names.
     """
     
     iface_list = []
@@ -241,11 +241,11 @@ def get_interface_names_of_class(ifcls_filter: InterfaceClass) -> List[str]:
 
 def is_ipv6_address(candidate: str) -> bool:
     """
-            Checks to see if ``candidate`` is an IPv6 address.
+        Checks to see if ``candidate`` is an IPv6 address represented as 16 raw bytes.
 
-            :param candidate: A string that is to be checked to see if it is a valid IPv6 address.
+        :param candidate: A string that is to be checked.
 
-            :returns: A boolean indicating if an IP address is an IPv6 address
+        :returns: A boolean indicating if an IP address is an IPv6 address
     """
     is_ipv6 = False
     if len(candidate) == 16:
