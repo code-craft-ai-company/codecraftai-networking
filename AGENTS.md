@@ -7,6 +7,13 @@ AI Agents working in this repository should refer to themselves as an agent name
 # Testing Conventions
 The 'automojo-networking' package repository utilizes the 'unittest' framework in order to test the functionality of the code.
 
+## Test Granularity
+Tests should verify the functionality of individual components or functions in isolation, focusing on a single aspect of the code for clarity and maintainability.
+
+Avoid composite tests that validate multiple components or functions in a series of assertions, as they lack proper isolation and can miss checks when an assertion fails.
+
+Use Python's `unittest` framework with `setUp` and `tearDown` methods to establish shared conditions across tests while maintaining separation of concerns.
+
 # Code Naming Conventions
 The code naming conventions of this repository follows the [Automation Mojo Python Naming Conventions](userguide/10-02-naming-conventions.rst)
 
@@ -31,6 +38,25 @@ When checking out the code for this repository in order to test changes, agents 
 * run the 'development/setup-envrionment' script in order to create the virtual environment.
 
 # Project Specific Rules
+
+
+# Running Tests
+In order to run the unittest tests, you must first enter the virtual environment by running the command:
+
+```
+    source <repository-root>/.venv/bin/activate
+```
+
+When you setup the environment, the '.venv/bin/activate' script is modified so that it will pull in the appropriate environment
+variables from the '.env' file.
+
+For running the 'unittest' tests located under the folder '<repository-root>/source/tests', use the command:
+
+```
+    cd <repository-root>
+
+    python -m unittest discover -s source/tests -p "test_*.py"
+```
 
 
 # Pull Request Guidelines
