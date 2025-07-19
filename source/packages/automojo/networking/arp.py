@@ -32,10 +32,16 @@ def get_arp_table() -> List[Dict[str, str]]:
     if this_platform == 'Windows':
         # Windows uses a different command for ARP
         arp_command = ['arp', '-a']
-        arp_item_match = re.compile(r'([-.0-9]+)\s+([-0-9a-f]{17})\s+(\w+)', re.MULTILINE)
+        arp_item_match = re.compile(
+            r"\s*([-.0-9]+)\s+([0-9A-Fa-f:-]{17})\s+(\w+)",
+            re.MULTILINE | re.IGNORECASE
+        )
     else:
-        arp_command = ['ip','neigh']
-        arp_item_match = re.compile(r'([\da-fA-F.:]+)\s+dev\s+([\w-]+)\s+lladdr\s+([\da-fA-F:]+)\s+.*', re.MULTILINE)
+        arp_command = ['ip', 'neigh']
+        arp_item_match = re.compile(
+            r'([\da-fA-F.:]+)\s+dev\s+([\w-]+)\s+lladdr\s+([\da-fA-F:]+)\s+.*',
+            re.MULTILINE
+        )
 
     # Run the arp command and capture the output
     try:
@@ -46,14 +52,20 @@ def get_arp_table() -> List[Dict[str, str]]:
 
     # Parse the output using regex
     arp_entries = []
-    for line in output.splitlines()[1:]:
+    for line in output.splitlines():
         match = arp_item_match.match(line)
         if match:
-            ip, hw_type, mac = match.groups()
+            if this_platform == 'Windows':
+                ip, mac_addr, arp_type = match.groups()
+                hw_value = arp_type
+            else:
+                ip, interface, mac_addr = match.groups()
+                hw_value = interface
+
             arp_entries.append({
                 'IPAddress': ip,
-                'HWType': hw_type,
-                'MACAddress': mac
+                'HWType': hw_value,
+                'MACAddress': mac_addr
             })
 
     return arp_entries
