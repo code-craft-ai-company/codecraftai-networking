@@ -11,7 +11,7 @@ __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
 
-from typing import Callable, Type
+from typing import Any, Callable, List, Tuple, Type, Union
 
 from types import TracebackType
 
@@ -64,7 +64,7 @@ class TrafficCaptureContext:
         return False
 
     @property
-    def captures(self):
+    def captures(self) -> List[Tuple[Any, Any]]:
         """
             Returns the list of captured request information.
 
@@ -81,16 +81,16 @@ class TrafficCaptureContext:
         return rtnlist
     
     @property
-    def owner(self):
+    def owner(self) -> Union[None, Any]:
         """
-            Returns the owner object for this context.
+            Returns the owner object for this context or None if the owner has been cleaned up.
 
             :returns: The owner object.
         """
         return self._owner_ref()
 
     @property
-    def fromip(self):
+    def fromip(self) -> str:
         """
             Returns the IP address being monitored.
 
@@ -99,7 +99,7 @@ class TrafficCaptureContext:
         return self._fromip
 
     @property
-    def identifier(self):
+    def identifier(self) -> str:
         """
             Returns the identifier for this capture session.
 
