@@ -35,7 +35,8 @@ def create_unicast_socket(target_addr: str, port: int, family: socket.AddressFam
             64 = same region
             128 = same continent
             255 = unrestricted scope
-        :param loop: Boolean value indicating if the loopback address should be included for traffic.
+        :param loop: Parameter retained for API compatibility.  It is ignored
+            as loopback handling is only relevant to multicast sockets.
         :param timeout: The socket timeout to assign to the socket
         :param apple_p2p: A boolean value indicating if the socket option for Apple Peer-2-Peer should be set.
 
@@ -70,23 +71,19 @@ def create_unicast_socket(target_addr: str, port: int, family: socket.AddressFam
                 err_msg = "Error attempting to set socket option 'SO_REUSEPORT'. errno=%d" % os_err.errno
                 raise RuntimeError(err_msg) from os_err
 
-    # Set the IP protocol level socket opition IP_MULTICAST_IF which is used to bind
-    # the socket to the address of a specific interface for OUTBOUND multi-cast traffic
-    sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_IF, socket.inet_aton(bind_addr))
+    # NOTE: Unicast sockets do not require the multicast specific
+    #       IP_MULTICAST_IF option.  We simply bind the socket to
+    #       the requested address.
 
     if ttl is not None:
         if family == socket.AF_INET:
-            ttl = struct.pack(b'b', ttl)
-            sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, ttl)
+            ttl = struct.pack('B', ttl)
+            sock.setsockopt(socket.IPPROTO_IP, socket.IP_TTL, ttl)
         else:
-            sock.setsockopt(IPPROTO_IPV6, socket.IPV6_MULTICAST_HOPS, ttl)
+            sock.setsockopt(IPPROTO_IPV6, socket.IPV6_UNICAST_HOPS, ttl)
 
-    if loop is not None:
-        if family == socket.AF_INET:
-            loop = struct.pack(b'b', loop)
-            sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_LOOP, loop)
-        else:
-            sock.setsockopt(IPPROTO_IPV6, socket.IPV6_MULTICAST_LOOP, loop)
+    # The 'loop' option is specific to multicast sockets.  It does not apply to
+    # unicast sockets, so it is ignored if provided.
 
     if apple_p2p:
         sock.setsockopt(socket.SOL_SOCKET, SO_RECV_ANYIF, 1)
