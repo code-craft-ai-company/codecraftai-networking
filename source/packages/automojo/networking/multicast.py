@@ -29,9 +29,8 @@ def create_multicast_listener_socket(multicast_addr: str, port: int, *, bind_add
         and with the specified settings.
 
         :param multicast_addr: The multicast group address the socket will be used to communicate with.
-        :param ifname: The name if the interface to create the socket for.
+        :param bind_addr: The address to bind the multicast socket to. The default is all addresses.
         :param port: The port to bind the socket with.
-        :param bind_addr: The address to bind the multicast socket too. The default is all addresses.
         :param family: The internet address family for the socket, either ``socket.AF_INET`` or ``socket.AF_INET6``
         :param ttl: The time to live that will be attached to the packets sent by this socket.
             0 = same host
@@ -76,7 +75,7 @@ def create_multicast_listener_socket(multicast_addr: str, port: int, *, bind_add
 
     if ttl is not None:
         if family == socket.AF_INET:
-            ttl = struct.pack(b'b', ttl)
+            ttl = struct.pack('B', ttl)
             sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, ttl)
         else:
             sock.setsockopt(IPPROTO_IPV6, socket.IPV6_MULTICAST_HOPS, ttl)
@@ -96,8 +95,12 @@ def create_multicast_listener_socket(multicast_addr: str, port: int, *, bind_add
 
     # We also need to tell the Kernel to bind the INBOUND traffic destined for the multi-cast
     # group to the address for this interface, so we receive responses
-    member_in = socket.inet_aton(multicast_addr) + socket.inet_aton(bind_addr)
-    sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, member_in)
+    if family == socket.AF_INET:
+        member_in = socket.inet_aton(multicast_addr) + socket.inet_aton(bind_addr)
+        sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, member_in)
+    else:
+        mreq = socket.inet_pton(socket.AF_INET6, multicast_addr) + struct.pack('@I', 0)
+        sock.setsockopt(IPPROTO_IPV6, socket.IPV6_JOIN_GROUP, mreq)
 
     sock.bind((bind_addr, port))
 
@@ -163,7 +166,7 @@ def create_multicast_listener_socket_for_iface(ifname: str, multicast_addr: str,
 
     if ttl is not None:
         if family == socket.AF_INET:
-            ttl = struct.pack(b'b', ttl)
+            ttl = struct.pack('B', ttl)
             sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, ttl)
         else:
             sock.setsockopt(IPPROTO_IPV6, socket.IPV6_MULTICAST_HOPS, ttl)
@@ -185,7 +188,12 @@ def create_multicast_listener_socket_for_iface(ifname: str, multicast_addr: str,
 
     # We also need to tell the Kernel to bind the INBOUND traffic destined for the multi-cast
     # group to the address for this interface, so we receive responses
-    member_in = socket.inet_aton(multicast_addr) + socket.inet_aton(bind_addr)
-    sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, member_in)
+    if family == socket.AF_INET:
+        member_in = socket.inet_aton(multicast_addr) + socket.inet_aton(bind_addr)
+        sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, member_in)
+    else:
+        iface_index = socket.if_nametoindex(ifname)
+        mreq = socket.inet_pton(socket.AF_INET6, multicast_addr) + struct.pack('@I', iface_index)
+        sock.setsockopt(IPPROTO_IPV6, socket.IPV6_JOIN_GROUP, mreq)
 
     return sock
