@@ -12,7 +12,6 @@ __credits__ = []
 
 from typing import List, Optional
 
-import csv
 import netifaces
 import os
 
@@ -77,15 +76,28 @@ def get_arp_table(normalize_hwaddr: bool=False):
     """
     arp_table = {}
 
-    with open('/proc/net/arp') as aif:
-        #'IP address', 'HW type', 'Flags', 'HW address', 'Mask', 'Device'
-        reader = csv.reader(aif, skipinitialspace=True, delimiter=' ')
-        table_data_rows = [r for r in reader][1:]
-        for ip, hwtype, flags, hwaddr, mask, ifname in table_data_rows:
-            if normalize_hwaddr:
-                hwaddr = hwaddr.replace(":", "").upper()
-            iinfo = { hwaddr: {"hwaddr": hwaddr, "ip": ip, "ifname": ifname, "hwtype": hwtype, "flags": flags, "mask": mask }}
-            arp_table.update(iinfo)
+    try:
+        with open("/proc/net/arp", "r", encoding="utf-8") as aif:
+            for line in aif.readlines()[1:]:  # skip header line
+                fields = line.split()
+                if len(fields) >= 6:
+                    ip, hwtype, flags, hwaddr, mask, ifname = fields[:6]
+                    if normalize_hwaddr:
+                        hwaddr = hwaddr.replace(":", "").upper()
+                    iinfo = {
+                        hwaddr: {
+                            "hwaddr": hwaddr,
+                            "ip": ip,
+                            "ifname": ifname,
+                            "hwtype": hwtype,
+                            "flags": flags,
+                            "mask": mask,
+                        }
+                    }
+                    arp_table.update(iinfo)
+    except FileNotFoundError:
+        # Non-Linux platforms may not expose '/proc/net/arp'
+        pass
 
     return arp_table
 
@@ -144,7 +156,10 @@ def is_ipv6_address(candidate: str) -> bool:
     return is_ipv6
 
 
-def refresh_arp_table(exclude_interfaces: List=["lo"], include_interfaces: Optional[List[str]]=None):
+def refresh_arp_table(
+    exclude_interfaces: Optional[List[str]] = None,
+    include_interfaces: Optional[List[str]] = None,
+):
     """
         Refreshes the local ARP table by pinging hosts reachable from the
         specified network interfaces.
@@ -155,25 +170,23 @@ def refresh_arp_table(exclude_interfaces: List=["lo"], include_interfaces: Optio
         :returns: ``None``
     """
 
-    interface_list = None
-    if include_interfaces is not None:
-        interface_list = include_interfaces
-    else:
-        interface_list = netifaces.interfaces()
+    if exclude_interfaces is None:
+        exclude_interfaces = ["lo"]
+
+    interface_list = include_interfaces if include_interfaces is not None else netifaces.interfaces()
     
     for ifname in interface_list:
         if ifname not in exclude_interfaces:
             address_info = netifaces.ifaddresses(ifname)
             if address_info is not None:
-
-                # First look for IPv4 address information
+                # Only attempt to refresh ARP using IPv4 addresses
                 if netifaces.AF_INET in address_info:
-                    addr_info = address_info[netifaces.AF_INET][0]
-                    ifaddress = addr_info["addr"]
-                    ifaddr_parts = ifaddress.split(".")
-                    addr_prefix = ".".join(ifaddr_parts[:-1])
-                    ping_cmd = ARPING_RANGE_CMD % (addr_prefix, addr_prefix)
-                    os.system(ping_cmd)
+                    for addr_info in address_info[netifaces.AF_INET]:
+                        ifaddress = addr_info.get("addr")
+                        if is_ipv4_address(ifaddress):
+                            prefix = ".".join(ifaddress.split(".")[:-1])
+                            ping_cmd = ARPING_RANGE_CMD % (prefix, prefix)
+                            os.system(ping_cmd)
 
     return
 
