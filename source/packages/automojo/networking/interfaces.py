@@ -74,7 +74,7 @@ def get_ipv6_address(ifname: str) -> Union[str, None]:
 
     address_info = netifaces.ifaddresses(ifname)
     if address_info is not None and netifaces.AF_INET6 in address_info:
-        addr_info = address_info[netifaces.AF_INET][0]
+        addr_info = address_info[netifaces.AF_INET6][0]
         addr = addr_info["addr"]
 
     return addr
@@ -105,7 +105,8 @@ def get_correspondance_interface(ref_ip: str, ref_port: int, addr_family=socket.
 
     corr_ip = get_correspondance_ip_address(ref_ip, ref_port, addr_family=addr_family)
 
-    corr_iface = get_interface_for_ip(corr_ip)
+    if corr_ip is not None:
+        corr_iface = get_interface_for_ip(corr_ip)
 
     return corr_iface, corr_ip
 
