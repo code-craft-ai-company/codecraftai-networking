@@ -37,6 +37,8 @@ class TrafficCaptureContext:
         self._owner_ref = weakref.ref(owner)
         self._identifier = identifier
         self._fromip = fromip
+        if destroy_method is None or not callable(destroy_method):
+            raise ValueError("destroy_method must be a callable")
         self._destroy_method = destroy_method
         self._lock = threading.Lock()
         self._captures = []
@@ -72,11 +74,8 @@ class TrafficCaptureContext:
         """
         rtnlist = None
 
-        self._lock.acquire()
-        try:
+        with self._lock:
             rtnlist = [c for c in self._captures]
-        finally:
-            self._lock.release()
 
         return rtnlist
     
@@ -114,13 +113,14 @@ class TrafficCaptureContext:
             :param req_headers: The request headers.
             :param req_body: The request body.
 
+            The caller should relinquish ownership of ``req_headers`` and ``req_body`` after
+            calling this method so that subsequent mutations do not alter the stored
+            capture data.
+
             :returns: ``None``
         """
 
-        self._lock.acquire()
-        try:
+        with self._lock:
             self._captures.append((req_headers, req_body))
-        finally:
-            self._lock.release()
 
         return
