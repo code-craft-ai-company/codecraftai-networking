@@ -66,9 +66,9 @@ def get_all_ipv4_interfaces() -> List[str]:
 
 def get_all_ipv6_interfaces() -> List[str]:
     """
-        Enumerates local network interfaces that have an IPv4 address.
+        Enumerates local network interfaces that have an IPv6 address.
 
-        :returns: List of interface names with IPv4 connectivity.
+        :returns: List of interface names with IPv6 connectivity.
     """
 
     iface_names = []
