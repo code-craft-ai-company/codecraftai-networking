@@ -34,6 +34,22 @@ class GetAllIPv4InterfacesTests(unittest.TestCase):
         result = interfaces.get_all_ipv4_interfaces()
         self.assertEqual(result, expected)
 
+    def test_returns_empty_list_when_no_ipv4(self):
+        self.interfaces_patcher.stop()
+        self.ifaddresses_patcher.stop()
+
+        self.interfaces_patcher = mock.patch("netifaces.interfaces", return_value=self.ifnames)
+        self.interfaces_patcher.start()
+
+        def fake_no_ipv4(ifname):
+            return {netifaces.AF_INET6: [{"addr": "fe80::1"}]}
+
+        self.ifaddresses_patcher = mock.patch("netifaces.ifaddresses", side_effect=fake_no_ipv4)
+        self.ifaddresses_patcher.start()
+
+        result = interfaces.get_all_ipv4_interfaces()
+        self.assertEqual(result, [])
+
 
 class GetAllIPv6InterfacesTests(unittest.TestCase):
 
@@ -65,6 +81,22 @@ class GetAllIPv6InterfacesTests(unittest.TestCase):
         expected = ["eth0", "wlan0"]
         result = interfaces.get_all_ipv6_interfaces()
         self.assertEqual(result, expected)
+
+    def test_returns_empty_list_when_no_ipv6(self):
+        self.interfaces_patcher.stop()
+        self.ifaddresses_patcher.stop()
+
+        self.interfaces_patcher = mock.patch("netifaces.interfaces", return_value=self.ifnames)
+        self.interfaces_patcher.start()
+
+        def fake_no_ipv6(ifname):
+            return {netifaces.AF_INET: [{"addr": "10.0.0.1"}]}
+
+        self.ifaddresses_patcher = mock.patch("netifaces.ifaddresses", side_effect=fake_no_ipv6)
+        self.ifaddresses_patcher.start()
+
+        result = interfaces.get_all_ipv6_interfaces()
+        self.assertEqual(result, [])
 
 
 if __name__ == "__main__":
