@@ -45,6 +45,25 @@ def encode_address(address: str) -> bytes:
     address_family = socket.AF_INET6 if is_ipv6 else socket.AF_INET
     return socket.inet_pton(address_family, address)
 
+
+def get_all_ipv4_interfaces() -> List[str]:
+    """
+        Enumerates local network interfaces that have an IPv4 address.
+
+        :returns: List of interface names with IPv4 connectivity.
+    """
+
+    iface_names = []
+
+    for ifname in netifaces.interfaces():
+        address_info = netifaces.ifaddresses(ifname)
+        if address_info is not None and netifaces.AF_INET in address_info:
+            if len(address_info[netifaces.AF_INET]) > 0:
+                iface_names.append(ifname)
+
+    return iface_names
+
+
 def get_ipv4_address(ifname: str) -> Union[str, None]:
     """
         Get the first IPv4 address associated with the specified interface name.
