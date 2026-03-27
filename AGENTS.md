@@ -67,7 +67,7 @@ For running the 'unittest' tests located under the folder '<repository-root>/sou
 ```
     cd <repository-root>
 
-    python -m unittest discover -s source/tests -p "test_*.py"
+    .venv/bin/python-env -m unittest discover -s source/tests -p "test_*.py"
 ```
 
 
