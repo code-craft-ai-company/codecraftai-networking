@@ -10,7 +10,8 @@ __author__ = "Myron Walker"
 __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
-from typing import Dict, List, Tuple, Union
+from dataclasses import dataclass
+from typing import Dict, List, Optional, Tuple, Union
 
 from enum import IntEnum
 
@@ -21,9 +22,17 @@ import subprocess
 
 import netifaces
 
+from automojo.errors.exceptions import ConfigurationError
+from automojo.networking.vpnoverlayprofile import SUPPORTED_VPN_PROVIDERS
+
 class InterfaceClass(IntEnum):
     """
         Enumeration that defines types of network interfaces.
+
+        Integer values are part of the on-disk / serialisation contract
+        for landscape configurations. New members append; existing
+        members never renumber. Downstream code may rely on the
+        stability of these integer values across releases.
     """
 
     UNKNOWN = 0
@@ -32,6 +41,104 @@ class InterfaceClass(IntEnum):
     WIRED = 3
     WIRELESS = 4
     TUNNEL = 5
+    VPN_OVERLAY = 6
+
+
+OVERLAY_INTERFACE_PATTERNS: Dict[str, List[str]] = {
+    "tailscale": [r"^tailscale\d+$", r"^utun\d+$"],
+    "twingate":  [r"^sdwan\d*$",     r"^twingate\d*$"],
+}
+
+
+@dataclass(frozen=True)
+class InterfaceDescriptor:
+    """
+        Describes a single network interface for landscape and discovery
+        code. Frozen so instances are hashable and equal-by-value.
+
+        :param name: OS-level interface name (e.g. ``"eth0"``,
+            ``"tailscale0"``).
+        :param interface_class: One of :class:`InterfaceClass`.
+        :param provider: Required when ``interface_class ==
+            InterfaceClass.VPN_OVERLAY``; must be ``None`` for every
+            other interface class.
+
+        :raises: :class:`ConfigurationError` when the bidirectional
+            ``VPN_OVERLAY`` <=> ``provider is not None`` invariant is
+            violated, or when ``provider`` is not in
+            :data:`automojo.networking.vpnoverlayprofile.SUPPORTED_VPN_PROVIDERS`.
+    """
+    name: str
+    interface_class: InterfaceClass
+    provider: Optional[str] = None
+
+    def __post_init__(self) -> None:
+        """
+            Enforce the bidirectional ``VPN_OVERLAY`` <=> ``provider``
+            invariant and the supported-providers constraint.
+
+            :raises: :class:`ConfigurationError`
+        """
+        is_overlay = self.interface_class == InterfaceClass.VPN_OVERLAY
+        provider_is_set = self.provider is not None
+
+        if is_overlay and not provider_is_set:
+            err_msg_lines = [
+                "InterfaceDescriptor with interface_class=VPN_OVERLAY requires a non-None 'provider'.",
+                f"    name: {self.name!r}",
+            ]
+            err_msg = os.linesep.join(err_msg_lines)
+            raise ConfigurationError(err_msg)
+
+        if not is_overlay and provider_is_set:
+            err_msg_lines = [
+                "InterfaceDescriptor 'provider' is only valid when interface_class == VPN_OVERLAY.",
+                f"    name: {self.name!r}",
+                f"    interface_class: {self.interface_class!r}",
+                f"    provider: {self.provider!r}",
+            ]
+            err_msg = os.linesep.join(err_msg_lines)
+            raise ConfigurationError(err_msg)
+
+        if is_overlay and provider_is_set:
+            if self.provider not in SUPPORTED_VPN_PROVIDERS:
+                err_msg_lines = [
+                    "InterfaceDescriptor 'provider' must be one of the supported providers.",
+                    f"    expected: {SUPPORTED_VPN_PROVIDERS!r}",
+                    f"    actual:   {self.provider!r}",
+                ]
+                err_msg = os.linesep.join(err_msg_lines)
+                raise ConfigurationError(err_msg)
+
+        return
+
+
+def detect_overlay_provider(*, name: str) -> Optional[str]:
+    """
+        Best-effort classification of an interface name to an overlay
+        provider id by pattern-matching against
+        :data:`OVERLAY_INTERFACE_PATTERNS`.
+
+        This is a hint for discovery routines, NOT authoritative
+        classification. Authoritative classification comes from the
+        ``IVPNClient`` runtime contract.
+
+        :param name: Interface name to classify.
+
+        :returns: ``"tailscale"`` / ``"twingate"`` / ``None``.
+    """
+    rtnval: Optional[str] = None
+    for provider, patterns in OVERLAY_INTERFACE_PATTERNS.items():
+        matched = False
+        for pat in patterns:
+            mobj = re.match(pat, name)
+            if mobj is not None:
+                matched = True
+                break
+        if matched:
+            rtnval = provider
+            break
+    return rtnval
 
 def encode_address(address: str) -> bytes:
     """
