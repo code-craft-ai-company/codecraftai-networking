@@ -10,14 +10,246 @@ __author__ = "Myron Walker"
 __copyright__ = "Copyright 2025, Automation Mojo LLC"
 __credits__ = []
 
-from typing import List, Optional
+from typing import Any, List, Optional
 
+import socket as _socket
 import netifaces
 import os
 
 ARPING_RANGE_CMD = """/bin/bash -c 'for i in {1..254} ;do ping %s.$i -w 5 -c 1 > /dev/null 2>&1 & echo "%s.$i" & done; wait < <(jobs -p); echo Done' """
 
 from automojo.networking.constants import CHARSET_IPV6_ADDR, REGEX_IPV4_COMPONENTS, REGEX_IPV6_COMPONENTS
+
+try:
+    from automojo.errors.exceptions import SemanticError
+except ImportError:
+    class SemanticError(Exception):
+        """
+            Local fallback for :class:`automojo.errors.exceptions.SemanticError`
+            used only when ``automojo-errors`` is not importable in this
+            environment.
+        """
+        pass
+
+try:
+    from automojo.aspects.aspects import Aspects
+except ImportError:
+    from dataclasses import dataclass as _aspects_dataclass
+
+    @_aspects_dataclass
+    class Aspects:  # type: ignore[no-redef]
+        """
+            Local structural fallback for
+            :class:`automojo.aspects.aspects.Aspects`. Defined only when
+            ``automojo-interfaces`` is not importable in the current
+            environment so this module remains testable in isolation.
+        """
+        completion_interval: float = 10.0
+        completion_timeout: float = 600.0
+        connection_timeout: float = 60.0
+        max_attempts: int = 1
+        logger_name: Optional[str] = None
+
+try:
+    from automojo.interfaces.addressplane import AddressPlane
+except ImportError:
+    import enum as _enum
+
+    class AddressPlane(_enum.IntEnum):  # type: ignore[no-redef]
+        """
+            Local structural fallback for
+            :class:`automojo.interfaces.addressplane.AddressPlane`.
+            Mirrors the integer values used by the canonical enum so
+            cross-environment dispatch is byte-identical.
+        """
+        PUBLIC = 1
+        PRIVATE = 2
+        OVERLAY = 3
+
+try:
+    from automojo.interfaces.ivpnclient import IVPNClient
+except ImportError:
+    from typing import Dict as _Dict, Protocol as _Protocol, runtime_checkable as _runtime_checkable
+
+    @_runtime_checkable
+    class IVPNClient(_Protocol):  # type: ignore[no-redef]
+        """
+            Local structural fallback for
+            :class:`automojo.interfaces.ivpnclient.IVPNClient`. Only the
+            ``peer_addresses`` method is consumed by this module.
+        """
+
+        def peer_addresses(self) -> "_Dict[str, str]":
+            ...
+
+
+_OVERLAY_DNS_RESOLVER: Optional[Any] = None
+
+
+def register_overlay_dns_resolver(*, resolver: Optional[Any]) -> None:
+    """
+        Register the overlay DNS resolver instance used by
+        :func:`resolve_in_plane` when ``plane == AddressPlane.OVERLAY``
+        and the injected ``vpn_client`` lookup misses.
+
+        Passing ``None`` clears the registration (useful for test
+        teardown).
+
+        :param resolver: An object exposing ``resolve(*, name, aspects)
+            -> Optional[str]``, or ``None`` to clear.
+
+        :returns: ``None``.
+    """
+    global _OVERLAY_DNS_RESOLVER
+    _OVERLAY_DNS_RESOLVER = resolver
+    return
+
+
+def get_overlay_dns_resolver() -> Optional[Any]:
+    """
+        Return the currently-registered overlay DNS resolver, or
+        ``None`` when none has been registered.
+
+        :returns: The registered resolver, or ``None``.
+    """
+    rtnval = _OVERLAY_DNS_RESOLVER
+    return rtnval
+
+
+def _resolve_public(*, name: str, aspects: Aspects) -> Optional[str]:
+    """
+        Resolve ``name`` on the public plane via the OS public DNS
+        resolver. Wraps :func:`socket.gethostbyname` and honours
+        ``aspects.connection_timeout`` via :func:`socket.setdefaulttimeout`
+        for the duration of the call.
+
+        :param name: Host name to resolve.
+        :param aspects: Behaviour controls.
+
+        :returns: Address string, or ``None`` when resolution fails.
+    """
+    rtnval: Optional[str] = None
+    prev_timeout = _socket.getdefaulttimeout()
+    try:
+        _socket.setdefaulttimeout(aspects.connection_timeout)
+        try:
+            candidate = _socket.gethostbyname(name)
+            rtnval = candidate
+        except _socket.gaierror:
+            rtnval = None
+        except _socket.timeout:
+            rtnval = None
+        except OSError:
+            rtnval = None
+    finally:
+        _socket.setdefaulttimeout(prev_timeout)
+    return rtnval
+
+
+def _resolve_private(*, name: str, aspects: Aspects) -> Optional[str]:
+    """
+        Resolve ``name`` on the private plane. The current networking
+        package has no distinct private-DNS resolver, so the private
+        path delegates to the same OS resolver as the public path but
+        is kept as a separate function so callers and overlay/private
+        paths remain trivially differentiable in tests and traces.
+
+        :param name: Host name to resolve.
+        :param aspects: Behaviour controls.
+
+        :returns: Address string, or ``None`` when resolution fails.
+    """
+    rtnval = _resolve_public(name=name, aspects=aspects)
+    return rtnval
+
+
+def _resolve_overlay(
+    *,
+    name: str,
+    aspects: Aspects,
+    vpn_client: Optional[IVPNClient],
+) -> Optional[str]:
+    """
+        Resolve ``name`` on the overlay plane.
+
+        Consults the injected ``vpn_client.peer_addresses()`` map
+        first; on a miss, falls through to the module-registered
+        overlay DNS resolver (if any). Never falls back to the public
+        or private resolvers.
+
+        :param name: Host name to resolve.
+        :param aspects: Behaviour controls.
+        :param vpn_client: Optional overlay client to consult first.
+
+        :returns: Address string, or ``None`` when no overlay resolver
+            answers.
+    """
+    rtnval: Optional[str] = None
+
+    if vpn_client is not None:
+        peers = vpn_client.peer_addresses()
+        if name in peers:
+            rtnval = peers[name]
+
+    if rtnval is None:
+        resolver = _OVERLAY_DNS_RESOLVER
+        if resolver is not None:
+            candidate = resolver.resolve(name=name, aspects=aspects)
+            rtnval = candidate
+
+    return rtnval
+
+
+def resolve_in_plane(
+    *,
+    name: str,
+    plane: AddressPlane,
+    aspects: Aspects,
+    vpn_client: Optional[IVPNClient] = None,
+) -> Optional[str]:
+    """
+        Resolve ``name`` to an address on the requested
+        :class:`AddressPlane`.
+
+        Dispatch is sealed: ``PUBLIC`` and ``PRIVATE`` consult the
+        respective OS resolvers; ``OVERLAY`` consults the injected
+        ``vpn_client`` first and then the module-registered overlay DNS
+        resolver. ``OVERLAY`` MUST NOT fall back to ``PUBLIC`` or
+        ``PRIVATE``: the caller declares the plane, the framework does
+        not classify addresses by network range.
+
+        :param name: Host name (short or FQDN) to resolve.
+        :param plane: Which plane to consult.
+        :param aspects: Behaviour controls (timeout, retries, logging).
+        :param vpn_client: Optional overlay client consulted first when
+            ``plane == AddressPlane.OVERLAY``.
+
+        :returns: Address string, or ``None`` when no resolver answers.
+        :raises: :class:`SemanticError` when ``name`` is empty or
+            ``plane`` is an unknown :class:`AddressPlane` member.
+    """
+    if len(name) == 0:
+        err_msg_lines = ["resolve_in_plane requires a non-empty 'name'."]
+        err_msg = os.linesep.join(err_msg_lines)
+        raise SemanticError(err_msg)
+
+    rtnval: Optional[str] = None
+
+    if plane == AddressPlane.PUBLIC:
+        rtnval = _resolve_public(name=name, aspects=aspects)
+    elif plane == AddressPlane.PRIVATE:
+        rtnval = _resolve_private(name=name, aspects=aspects)
+    elif plane == AddressPlane.OVERLAY:
+        rtnval = _resolve_overlay(name=name, aspects=aspects, vpn_client=vpn_client)
+    else:
+        err_msg_lines = [
+            "resolve_in_plane has no branch for the supplied AddressPlane member.",
+            f"    plane: {plane!r}",
+        ]
+        err_msg = os.linesep.join(err_msg_lines)
+        raise SemanticError(err_msg)
+
+    return rtnval
 
 
 def expand_ipv6_addr(addr: str) -> str:
