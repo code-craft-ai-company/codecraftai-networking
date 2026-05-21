@@ -339,5 +339,50 @@ class ResolveInPlanePropertyTests(unittest.TestCase):
         return
 
 
+class CanonicalTypeIdentityTests(unittest.TestCase):
+    """
+        Regression tests for audit finding F-H5: the resolution module
+        previously defined a SEPARATE local ``SemanticError`` class via an
+        ImportError fallback, so callers' ``except`` / ``isinstance`` against
+        the canonical ``automojo.errors.exceptions.SemanticError`` silently
+        missed it.
+    """
+
+    def test_semantic_error_is_canonical(self) -> None:
+        """
+            ``resolution.SemanticError`` must be the canonical
+            ``automojo.errors.exceptions.SemanticError`` type.
+        """
+        from automojo.errors.exceptions import SemanticError as CanonicalSemanticError
+
+        self.assertIs(SemanticError, CanonicalSemanticError)
+        return
+
+    def test_empty_name_raises_canonical_semantic_error(self) -> None:
+        """
+            The error raised for an empty name must be catchable as the
+            canonical ``SemanticError``.
+        """
+        from automojo.errors.exceptions import SemanticError as CanonicalSemanticError
+
+        with self.assertRaises(CanonicalSemanticError):
+            resolve_in_plane(
+                name="",
+                plane=AddressPlane.PUBLIC,
+                aspects=_make_aspects(),
+            )
+        return
+
+    def test_address_plane_is_canonical(self) -> None:
+        """
+            ``resolution.AddressPlane`` must be the canonical
+            ``automojo.interfaces.addressplane.AddressPlane`` type.
+        """
+        from automojo.interfaces.addressplane import AddressPlane as CanonicalAddressPlane
+
+        self.assertIs(resolution.AddressPlane, CanonicalAddressPlane)
+        return
+
+
 if __name__ == "__main__":
     unittest.main()

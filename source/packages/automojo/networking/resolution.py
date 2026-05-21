@@ -18,69 +18,23 @@ import os
 
 ARPING_RANGE_CMD = """/bin/bash -c 'for i in {1..254} ;do ping %s.$i -w 5 -c 1 > /dev/null 2>&1 & echo "%s.$i" & done; wait < <(jobs -p); echo Done' """
 
-from automojo.networking.constants import CHARSET_IPV6_ADDR, REGEX_IPV4_COMPONENTS, REGEX_IPV6_COMPONENTS
+from automojo.networking.constants import REGEX_IPV4_COMPONENTS, REGEX_IPV6_COMPONENTS
 
-try:
-    from automojo.errors.exceptions import SemanticError
-except ImportError:
-    class SemanticError(Exception):
-        """
-            Local fallback for :class:`automojo.errors.exceptions.SemanticError`
-            used only when ``automojo-errors`` is not importable in this
-            environment.
-        """
-        pass
+# ---------------------------------------------------------------------------
+# Cross-repository type imports.
+#
+# ``SemanticError`` (automojo-errors), ``Aspects`` (automojo-interfaces),
+# ``AddressPlane`` and ``IVPNClient`` (automojo-interfaces) are core
+# dependencies. They are imported hard so a missing or mis-pathed core
+# dependency fails loudly at import time. A previous ImportError fallback
+# defined a SEPARATE ``SemanticError`` class, so callers' ``except`` /
+# ``isinstance`` against the canonical type silently missed it.
+# ---------------------------------------------------------------------------
 
-try:
-    from automojo.aspects.aspects import Aspects
-except ImportError:
-    from dataclasses import dataclass as _aspects_dataclass
-
-    @_aspects_dataclass
-    class Aspects:  # type: ignore[no-redef]
-        """
-            Local structural fallback for
-            :class:`automojo.aspects.aspects.Aspects`. Defined only when
-            ``automojo-interfaces`` is not importable in the current
-            environment so this module remains testable in isolation.
-        """
-        completion_interval: float = 10.0
-        completion_timeout: float = 600.0
-        connection_timeout: float = 60.0
-        max_attempts: int = 1
-        logger_name: Optional[str] = None
-
-try:
-    from automojo.interfaces.addressplane import AddressPlane
-except ImportError:
-    import enum as _enum
-
-    class AddressPlane(_enum.IntEnum):  # type: ignore[no-redef]
-        """
-            Local structural fallback for
-            :class:`automojo.interfaces.addressplane.AddressPlane`.
-            Mirrors the integer values used by the canonical enum so
-            cross-environment dispatch is byte-identical.
-        """
-        PUBLIC = 1
-        PRIVATE = 2
-        OVERLAY = 3
-
-try:
-    from automojo.interfaces.ivpnclient import IVPNClient
-except ImportError:
-    from typing import Dict as _Dict, Protocol as _Protocol, runtime_checkable as _runtime_checkable
-
-    @_runtime_checkable
-    class IVPNClient(_Protocol):  # type: ignore[no-redef]
-        """
-            Local structural fallback for
-            :class:`automojo.interfaces.ivpnclient.IVPNClient`. Only the
-            ``peer_addresses`` method is consumed by this module.
-        """
-
-        def peer_addresses(self) -> "_Dict[str, str]":
-            ...
+from automojo.errors.exceptions import SemanticError
+from automojo.aspects.aspects import Aspects
+from automojo.interfaces.addressplane import AddressPlane
+from automojo.interfaces.ivpnclient import IVPNClient
 
 
 _OVERLAY_DNS_RESOLVER: Optional[Any] = None
