@@ -2,14 +2,14 @@
 
 ## Overview
 
-The `automojo.networking` package is a Python networking library designed for test automation and network testing scenarios. It provides comprehensive utilities for network interface management, multicast/unicast communication, ARP table operations, and traffic capture capabilities across multiple platforms (Darwin, Linux, Unix, Windows).
+The `ccai.networking` package is a Python networking library designed for test automation and network testing scenarios. It provides comprehensive utilities for network interface management, multicast/unicast communication, ARP table operations, and traffic capture capabilities across multiple platforms (Darwin, Linux, Unix, Windows).
 
 ## Architecture
 
 ### Package Structure
 
 ```
-automojo/networking/
+ccai/networking/
 ├── __init__.py              # Package initialization
 ├── constants.py             # Network constants and protocol definitions
 ├── arp.py                   # ARP table management utilities
@@ -139,8 +139,8 @@ automojo/networking/
 
 ### 1. Network Discovery
 ```python
-from automojo.networking.interfaces import get_all_ipv4_interfaces
-from automojo.networking.arp import get_arp_table
+from ccai.networking.interfaces import get_all_ipv4_interfaces
+from ccai.networking.arp import get_arp_table
 
 # Discover available interfaces
 interfaces = get_all_ipv4_interfaces()
@@ -151,8 +151,8 @@ arp_entries = get_arp_table()
 
 ### 2. Multicast Communication
 ```python
-from automojo.networking.multicast import create_multicast_listener_socket
-from automojo.networking.constants import MDNS_GROUP_ADDR, MDNS_PORT
+from ccai.networking.multicast import create_multicast_listener_socket
+from ccai.networking.constants import MDNS_GROUP_ADDR, MDNS_PORT
 
 # Create mDNS listener
 sock = create_multicast_listener_socket(MDNS_GROUP_ADDR, MDNS_PORT)
@@ -160,7 +160,7 @@ sock = create_multicast_listener_socket(MDNS_GROUP_ADDR, MDNS_PORT)
 
 ### 3. Traffic Capture
 ```python
-from automojo.networking.trafficcapturecontext import TrafficCaptureContext
+from ccai.networking.trafficcapturecontext import TrafficCaptureContext
 
 with TrafficCaptureContext(owner, "session1", "192.168.1.100", cleanup_func) as ctx:
     # Perform network operations
@@ -183,7 +183,7 @@ with TrafficCaptureContext(owner, "session1", "192.168.1.100", cleanup_func) as 
 ## Testing Considerations
 
 ### 1. Unit Test Structure
-- Each module has corresponding test files in `source/tests/automojo_tests/networking/`
+- Each module has corresponding test files in `source/tests/ccai_tests/networking/`
 - Tests focus on individual function behavior
 - Mock external dependencies (subprocess calls, file system access)
 
@@ -228,4 +228,4 @@ with TrafficCaptureContext(owner, "session1", "192.168.1.100", cleanup_func) as 
 - Structured data returns minimize memory copying
 - Thread-safe collections for concurrent access
 
-This design document reflects the current implementation of the automojo.networking package, emphasizing its role as a testing-focused networking library that prioritizes debuggability, cross-platform compatibility, and ease of use in automated testing scenarios.
+This design document reflects the current implementation of the ccai.networking package, emphasizing its role as a testing-focused networking library that prioritizes debuggability, cross-platform compatibility, and ease of use in automated testing scenarios.

@@ -2,7 +2,7 @@
 
 ## Module and Models
 
-- [x] 1. Open `automojo-networking/source/packages/automojo/networking/interfaces.py`
+- [x] 1. Open `codecraftai-networking/source/packages/ccai/networking/interfaces.py`
   for in-place extension.
 - [x] 2. Add `VPN_OVERLAY = 6` member to `InterfaceClass`; preserve
   every existing member's integer value.

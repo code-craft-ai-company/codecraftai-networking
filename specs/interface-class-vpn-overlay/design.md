@@ -5,7 +5,7 @@
 This feature is the descriptor-level peer to
 `AddressPlane.OVERLAY`. It extends the existing
 `InterfaceClass(IntEnum)` in
-`automojo-networking/source/packages/automojo/networking/interfaces.py`
+`codecraftai-networking/source/packages/ccai/networking/interfaces.py`
 with `VPN_OVERLAY = 6`, introduces an `InterfaceDescriptor` dataclass
 that carries an `Optional[str] provider` discriminator (mandatory for
 overlay interfaces, forbidden for non-overlay), and adds a small
@@ -15,7 +15,7 @@ routines.
 The change is additive: every existing member of `InterfaceClass`
 retains its integer value so serialised configs continue to load.
 
-**See Also:** [address-plane-types](../../../automojo-interfaces/specs/address-plane-types/design.md),
+**See Also:** [address-plane-types](../../../codecraftai-interfaces/specs/address-plane-types/design.md),
 [vpn-overlay-profile](../vpn-overlay-profile/design.md).
 
 ---
@@ -61,8 +61,8 @@ from dataclasses import dataclass
 from enum import IntEnum
 from typing import Dict, List, Optional
 
-from automojo.errors.exceptions import ConfigurationError
-from automojo.networking.vpnoverlayprofile import SUPPORTED_VPN_PROVIDERS
+from ccai.errors.exceptions import ConfigurationError
+from ccai.networking.vpnoverlayprofile import SUPPORTED_VPN_PROVIDERS
 
 
 class InterfaceClass(IntEnum):
@@ -149,7 +149,7 @@ def detect_overlay_provider(*, name: str) -> Optional[str]:
 ## Module Layout
 
 ```
-automojo-networking/source/packages/automojo/networking/
+codecraftai-networking/source/packages/ccai/networking/
   interfaces.py     <-- extended in place: InterfaceClass.VPN_OVERLAY,
                         InterfaceDescriptor, OVERLAY_INTERFACE_PATTERNS,
                         detect_overlay_provider
@@ -160,12 +160,12 @@ automojo-networking/source/packages/automojo/networking/
 
 ## See Also
 
-- [address-plane-types](../../../automojo-interfaces/specs/address-plane-types/design.md)
+- [address-plane-types](../../../codecraftai-interfaces/specs/address-plane-types/design.md)
   — `AddressPlane.OVERLAY` is the address-level peer of
   `InterfaceClass.VPN_OVERLAY`.
 - [vpn-overlay-profile](../vpn-overlay-profile/design.md) —
   supplies `SUPPORTED_VPN_PROVIDERS`.
-- [vpn-client-protocol](../../../automojo-interfaces/specs/vpn-client-protocol/design.md)
+- [vpn-client-protocol](../../../codecraftai-interfaces/specs/vpn-client-protocol/design.md)
   — authoritative provider classification at runtime.
 
 ---

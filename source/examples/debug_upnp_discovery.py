@@ -1,7 +1,7 @@
 
 import time
 
-from automojo.networking.protocols.upnp.upnppresence import UpnpPresence
+from ccai.networking.protocols.upnp.upnppresence import UpnpPresence
 
 def main_debug_upnp_discovery():
     """

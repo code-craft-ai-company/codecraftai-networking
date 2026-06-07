@@ -3,7 +3,7 @@
 ## Introduction
 
 The `address-plane-resolution` feature adds plane-aware host
-resolution to `automojo-networking`. It introduces the
+resolution to `codecraftai-networking`. It introduces the
 `resolve_in_plane(name, plane, aspects)` helper and the local
 `AddressPlane` re-export, so call sites can ask "give me a reachable
 address for `name` on plane `OVERLAY`" without hard-wiring Tailscale
@@ -20,8 +20,8 @@ This feature is marked **⊙** — property tests are required. The
 plane-selection logic is total and ordering-sensitive (fall-through
 through resolvers), which calls for hypothesis coverage.
 
-**See Also:** [address-plane-types](../../../automojo-interfaces/specs/address-plane-types/design.md),
-[vpn-client-protocol](../../../automojo-interfaces/specs/vpn-client-protocol/design.md),
+**See Also:** [address-plane-types](../../../codecraftai-interfaces/specs/address-plane-types/design.md),
+[vpn-client-protocol](../../../codecraftai-interfaces/specs/vpn-client-protocol/design.md),
 [vpn-overlay-profile](../vpn-overlay-profile/design.md).
 
 ---
@@ -38,7 +38,7 @@ plane.
 
 1. THE SYSTEM SHALL declare
    `resolve_in_plane(name, plane, aspects, vpn_client=None) -> Optional[str]`
-   in `automojo-networking/source/packages/automojo/networking/resolution.py`.
+   in `codecraftai-networking/source/packages/ccai/networking/resolution.py`.
 2. THE SYSTEM SHALL require `name: str` non-empty.
 3. THE SYSTEM SHALL require `plane: AddressPlane`.
 4. THE SYSTEM SHALL require `aspects: Aspects`.

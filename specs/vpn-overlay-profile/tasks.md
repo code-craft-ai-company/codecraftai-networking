@@ -2,7 +2,7 @@
 
 ## Module and Models
 
-- [x] 1. Create `automojo-networking/source/packages/automojo/networking/vpnoverlayprofile.py`.
+- [x] 1. Create `codecraftai-networking/source/packages/ccai/networking/vpnoverlayprofile.py`.
 - [x] 2. Add `SUPPORTED_VPN_PROVIDERS = ("tailscale", "twingate")`
   module constant.
 - [x] 3. Define `VPNOverlayProfile(frozen=True)` dataclass with the

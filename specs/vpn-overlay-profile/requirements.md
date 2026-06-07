@@ -3,7 +3,7 @@
 ## Introduction
 
 The `vpn-overlay-profile` feature adds the `VPNOverlayProfile`
-data class to `automojo-networking`. A profile describes a mesh-VPN
+data class to `codecraftai-networking`. A profile describes a mesh-VPN
 overlay (provider, network/tailnet identifier, default tags, DNS
 suffix, MagicDNS toggle, ACL reference) and is consumed by landscape
 and provisioning code to bring hosts onto the correct overlay
@@ -11,10 +11,10 @@ without scattering vendor strings through call sites.
 
 The class is data-only — no I/O, no credentials, no client
 references. Credentials are looked up by category from
-`automojo-credentials` at use time (per §8 commitment "Credentials
+`codecraftai-credentials` at use time (per §8 commitment "Credentials
 are values, not strings").
 
-**See Also:** [vpn-client-protocol](../../../automojo-interfaces/specs/vpn-client-protocol/design.md),
+**See Also:** [vpn-client-protocol](../../../codecraftai-interfaces/specs/vpn-client-protocol/design.md),
 [address-plane-resolution](../address-plane-resolution/design.md),
 [interface-class-vpn-overlay](../interface-class-vpn-overlay/design.md).
 
@@ -40,7 +40,7 @@ that captures an overlay so I can reference it by name from
    - `magic_dns_enabled: bool = False`
    - `acl_ref: Optional[str] = None`
 2. THE SYSTEM SHALL place the class in
-   `automojo-networking/source/packages/automojo/networking/vpnoverlayprofile.py`.
+   `codecraftai-networking/source/packages/ccai/networking/vpnoverlayprofile.py`.
 
 ---
 

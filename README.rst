@@ -1,8 +1,8 @@
 ===========================
-Automation Mojo Networking
+Code Craft AI Networking
 ===========================
 
-The ``automojo-networking`` package is the low-level networking toolkit for the automojo suite. It provides the reusable primitives that higher-level protocol, discovery, and landscaping packages build on top of, without pulling in any heavy third-party networking stacks. Downstream packages such as ``automojo-interop`` (DNS/mDNS), ``automojo-landscaping``, and the various ``automojo-interop-ext-*`` packages use these primitives directly.
+The ``codecraftai-networking`` package is the low-level networking toolkit for the ccai suite. It provides the reusable primitives that higher-level protocol, discovery, and landscaping packages build on top of, without pulling in any heavy third-party networking stacks. Downstream packages such as ``codecraftai-interop`` (DNS/mDNS), ``codecraftai-landscaping``, and the various ``codecraftai-interop-ext-*`` packages use these primitives directly.
 
 Highlights
 ==========
