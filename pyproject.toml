@@ -23,6 +23,7 @@ automojo-errors = { git = "https://github.com/automationmojo/automojo-errors.git
 automojo-interfaces = { git = "https://github.com/automationmojo/automojo-interfaces.git", branch = "main" }
 
 [tool.poetry.group.dev.dependencies]
+automojo-testbase = { git = "https://github.com/automationmojo/automojo-testbase.git", branch = "main" }
 
 [tool.poetry.group.dbio.dependencies]
 
