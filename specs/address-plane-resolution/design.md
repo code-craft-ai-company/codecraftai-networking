@@ -3,7 +3,7 @@
 ## Overview
 
 `resolve_in_plane` is the single plane-aware host-resolution entry
-point in `automojo-networking`. It is added to the existing
+point in `codecraftai-networking`. It is added to the existing
 `resolution.py` module, alongside the IPv6 / IPv4 helpers already
 there. The function dispatches on `AddressPlane`:
 
@@ -24,10 +24,10 @@ load-bearing: totality across the `AddressPlane` enum, isolation of
 `OVERLAY` from public resolvers, and idempotence under repeated
 queries are property-testable invariants and are listed below.
 
-**See Also:** [address-plane-types](../../../automojo-interfaces/specs/address-plane-types/design.md),
-[vpn-client-protocol](../../../automojo-interfaces/specs/vpn-client-protocol/design.md),
+**See Also:** [address-plane-types](../../../codecraftai-interfaces/specs/address-plane-types/design.md),
+[vpn-client-protocol](../../../codecraftai-interfaces/specs/vpn-client-protocol/design.md),
 [vpn-overlay-profile](../vpn-overlay-profile/design.md),
-[overlay-dns-resolver](../../../automojo-interfaces/specs/vpn-client-protocol/design.md).
+[overlay-dns-resolver](../../../codecraftai-interfaces/specs/vpn-client-protocol/design.md).
 
 ---
 
@@ -66,13 +66,13 @@ queries are property-testable invariants and are listed below.
 ```python
 from typing import Optional
 
-from automojo.aspects.aspects import Aspects
-from automojo.errors.exceptions import SemanticError
-from automojo.interfaces.iaddressplane import AddressPlane
-from automojo.interfaces.ivpnclient import IVPNClient
+from ccai.aspects.aspects import Aspects
+from ccai.errors.exceptions import SemanticError
+from ccai.interfaces.iaddressplane import AddressPlane
+from ccai.interfaces.ivpnclient import IVPNClient
 
 # OverlayDnsResolver is registered via a small module-level setter
-# by overlay-dns-resolver in automojo-interop.
+# by overlay-dns-resolver in codecraftai-interop.
 _OVERLAY_DNS_RESOLVER = None
 
 
@@ -149,7 +149,7 @@ to local helpers so the dispatch is the only thing tested.
 ## Module Layout
 
 ```
-automojo-networking/source/packages/automojo/networking/
+codecraftai-networking/source/packages/ccai/networking/
   resolution.py     <-- extended with resolve_in_plane,
                         register_overlay_dns_resolver,
                         _resolve_overlay, _resolve_public, _resolve_private
@@ -159,9 +159,9 @@ automojo-networking/source/packages/automojo/networking/
 
 ## See Also
 
-- [address-plane-types](../../../automojo-interfaces/specs/address-plane-types/design.md)
+- [address-plane-types](../../../codecraftai-interfaces/specs/address-plane-types/design.md)
   — supplies the `AddressPlane` enum dispatched on here.
-- [vpn-client-protocol](../../../automojo-interfaces/specs/vpn-client-protocol/design.md)
+- [vpn-client-protocol](../../../codecraftai-interfaces/specs/vpn-client-protocol/design.md)
   — `IVPNClient.peer_addresses()` is the first-class overlay source.
 - [vpn-overlay-profile](../vpn-overlay-profile/design.md) — the
   static configuration whose `dns_suffix` the overlay DNS resolver

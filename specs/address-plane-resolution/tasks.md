@@ -2,7 +2,7 @@
 
 ## Module and Models
 
-- [x] 1. Open `automojo-networking/source/packages/automojo/networking/resolution.py`
+- [x] 1. Open `codecraftai-networking/source/packages/ccai/networking/resolution.py`
   for in-place extension.
 - [x] 2. Add module-level `_OVERLAY_DNS_RESOLVER = None`.
 - [x] 3. Add `register_overlay_dns_resolver(*, resolver)` setter.

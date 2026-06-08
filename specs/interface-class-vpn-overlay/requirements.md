@@ -4,7 +4,7 @@
 
 The `interface-class-vpn-overlay` feature extends the existing
 `InterfaceClass(IntEnum)` in
-`automojo-networking/source/packages/automojo/networking/interfaces.py`
+`codecraftai-networking/source/packages/ccai/networking/interfaces.py`
 with a new `VPN_OVERLAY` member, and adds a `provider: Optional[str]`
 discriminator on the interface descriptor for overlay interfaces.
 This is the descriptor-level counterpart to the
@@ -18,9 +18,9 @@ wants to ask "is this a mesh-VPN overlay?". Adding the
 `VPN_OVERLAY` member lets device-enumeration code answer that
 question directly.
 
-**See Also:** [address-plane-types](../../../automojo-interfaces/specs/address-plane-types/design.md),
+**See Also:** [address-plane-types](../../../codecraftai-interfaces/specs/address-plane-types/design.md),
 [vpn-overlay-profile](../vpn-overlay-profile/design.md),
-[vpn-client-protocol](../../../automojo-interfaces/specs/vpn-client-protocol/design.md).
+[vpn-client-protocol](../../../codecraftai-interfaces/specs/vpn-client-protocol/design.md).
 
 ---
 

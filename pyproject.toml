@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "automojo-networking"
-description = "Automation Mojo - Networking Package"
+name = "codecraftai-networking"
+description = "Code Craft AI - Networking Package"
 version = "0.0.1"
 authors = []
 readme = "README.rst"
@@ -13,17 +13,17 @@ classifiers = [
 keywords = [
     "python"
 ]
-packages = [{include="automojo", from="source/packages"}]
+packages = [{include="ccai", from="source/packages"}]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<4.0"
 netifaces = "^0.11.0"
 requests = "^2.32.3"
-automojo-errors = { git = "https://github.com/automationmojo/automojo-errors.git", branch = "main" }
-automojo-interfaces = { git = "https://github.com/automationmojo/automojo-interfaces.git", branch = "main" }
+codecraftai-errors = { git = "https://github.com/automationmojo/codecraftai-errors.git", branch = "main" }
+codecraftai-interfaces = { git = "https://github.com/automationmojo/codecraftai-interfaces.git", branch = "main" }
 
 [tool.poetry.group.dev.dependencies]
-automojo-testbase = { git = "https://github.com/automationmojo/automojo-testbase.git", branch = "main" }
+codecraftai-testbase = { git = "https://github.com/automationmojo/codecraftai-testbase.git", branch = "main" }
 
 [tool.poetry.group.dbio.dependencies]
 

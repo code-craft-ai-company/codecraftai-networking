@@ -3,7 +3,7 @@
 ## Overview
 
 `VPNOverlayProfile` is a frozen dataclass added under
-`automojo-networking/source/packages/automojo/networking/vpnoverlayprofile.py`.
+`codecraftai-networking/source/packages/ccai/networking/vpnoverlayprofile.py`.
 It captures every piece of static configuration an overlay needs:
 the provider id, the tailnet/network identifier, the default tags
 to advertise, the DNS suffix (if any), the MagicDNS toggle, and an
@@ -22,12 +22,12 @@ The §8 usability commitments are honoured here:
 - Frozen, hashable, equal-by-value — predictable container behaviour.
 - No I/O.
 
-**See Also:** [vpn-client-protocol](../../../automojo-interfaces/specs/vpn-client-protocol/design.md),
-[vpn-control-plane-protocol](../../../automojo-interfaces/specs/vpn-control-plane-protocol/design.md),
+**See Also:** [vpn-client-protocol](../../../codecraftai-interfaces/specs/vpn-client-protocol/design.md),
+[vpn-control-plane-protocol](../../../codecraftai-interfaces/specs/vpn-control-plane-protocol/design.md),
 [address-plane-resolution](../address-plane-resolution/design.md),
 [interface-class-vpn-overlay](../interface-class-vpn-overlay/design.md),
-[tailscale-credentials](../../../automojo-credentials/specs/tailscale-credentials/design.md),
-[twingate-credentials](../../../automojo-credentials/specs/twingate-credentials/design.md).
+[tailscale-credentials](../../../codecraftai-credentials/specs/tailscale-credentials/design.md),
+[twingate-credentials](../../../codecraftai-credentials/specs/twingate-credentials/design.md).
 
 ---
 
@@ -68,7 +68,7 @@ The §8 usability commitments are honoured here:
 from dataclasses import dataclass, field
 from typing import List, Optional
 
-from automojo.errors.exceptions import ConfigurationError
+from ccai.errors.exceptions import ConfigurationError
 
 
 SUPPORTED_VPN_PROVIDERS = ("tailscale", "twingate")
@@ -145,7 +145,7 @@ class VPNOverlayProfile:
 ## Module Layout
 
 ```
-automojo-networking/source/packages/automojo/networking/
+codecraftai-networking/source/packages/ccai/networking/
   vpnoverlayprofile.py     <-- VPNOverlayProfile, SUPPORTED_VPN_PROVIDERS
   interfaces.py            (existing — extended by interface-class-vpn-overlay)
   resolution.py            (existing — extended by address-plane-resolution)
@@ -155,9 +155,9 @@ automojo-networking/source/packages/automojo/networking/
 
 ## See Also
 
-- [vpn-client-protocol](../../../automojo-interfaces/specs/vpn-client-protocol/design.md)
+- [vpn-client-protocol](../../../codecraftai-interfaces/specs/vpn-client-protocol/design.md)
   — `IVPNClient.bring_up` consumes the profile's `network` and `tags`.
-- [vpn-control-plane-protocol](../../../automojo-interfaces/specs/vpn-control-plane-protocol/design.md)
+- [vpn-control-plane-protocol](../../../codecraftai-interfaces/specs/vpn-control-plane-protocol/design.md)
   — `IVPNControlPlane.apply_acl` consumes `acl_ref`-resolved documents.
 - [address-plane-resolution](../address-plane-resolution/design.md) —
   consumes `dns_suffix` + `magic_dns_enabled` when resolving overlay

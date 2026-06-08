@@ -292,7 +292,7 @@
 
 **REQ-CONST-004**: The system SHALL follow repository coding standards
 - **Acceptance Criteria**:
-  - Follow Automation Mojo Python naming conventions
+  - Follow Code Craft AI Python naming conventions
   - Adhere to specified code organization standards
   - Prioritize debuggability and readability
   - Include comprehensive documentation and type hints
