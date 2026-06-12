@@ -1,4 +1,4 @@
-# AutoMojo Networking Package Design Document
+# Code Craft AI Networking Package Design Document
 
 ## Overview
 

@@ -1,4 +1,4 @@
-# AutoMojo Networking Package Requirements
+# Code Craft AI Networking Package Requirements
 
 ## 1. Functional Requirements
 
