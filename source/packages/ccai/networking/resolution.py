@@ -15,8 +15,7 @@ from typing import Any, List, Optional
 import socket as _socket
 import netifaces
 import os
-
-ARPING_RANGE_CMD = """/bin/bash -c 'for i in {1..254} ;do ping %s.$i -w 5 -c 1 > /dev/null 2>&1 & echo "%s.$i" & done; wait < <(jobs -p); echo Done' """
+import subprocess
 
 from ccai.networking.constants import REGEX_IPV4_COMPONENTS, REGEX_IPV6_COMPONENTS
 
@@ -371,8 +370,21 @@ def refresh_arp_table(
                         ifaddress = addr_info.get("addr")
                         if is_ipv4_address(ifaddress):
                             prefix = ".".join(ifaddress.split(".")[:-1])
-                            ping_cmd = ARPING_RANGE_CMD % (prefix, prefix)
-                            os.system(ping_cmd)
+                            # Fan out one ping per host in the /24 to populate the
+                            # ARP table. Each ping is launched as an argv list (no
+                            # shell, no string interpolation) and all are awaited,
+                            # replacing the prior os.system bash fan-out.
+                            ping_procs = []
+                            for host_octet in range(1, 255):
+                                target = "{}.{}".format(prefix, host_octet)
+                                ping_proc = subprocess.Popen(
+                                    ["ping", target, "-w", "5", "-c", "1"],
+                                    stdout=subprocess.DEVNULL,
+                                    stderr=subprocess.DEVNULL,
+                                )
+                                ping_procs.append(ping_proc)
+                            for ping_proc in ping_procs:
+                                ping_proc.wait()
 
     return
 

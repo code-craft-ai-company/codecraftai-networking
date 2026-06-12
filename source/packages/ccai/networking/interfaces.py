@@ -223,7 +223,7 @@ def get_ipv6_address(ifname: str) -> Union[str, None]:
 
     return addr
 
-def get_correspondance_interface(ref_ip: str, ref_port: int, addr_family=socket.AF_INET) -> Tuple[str, str]:
+def get_correspondance_interface(ref_ip: str, ref_port: int, addr_family=socket.AF_INET) -> Tuple[Optional[str], Optional[str]]:
     """
         Utilizes the TCP stack to make a connection to a remote computer and utilizes
         gets the network interface that was used to connect to the remote computer.
@@ -254,7 +254,7 @@ def get_correspondance_interface(ref_ip: str, ref_port: int, addr_family=socket.
 
     return corr_iface, corr_ip
 
-def get_correspondance_ip_address(ref_ip: str, ref_port: int=1, addr_family=socket.AF_INET) -> str:
+def get_correspondance_ip_address(ref_ip: str, ref_port: int=1, addr_family=socket.AF_INET) -> Optional[str]:
     """
         Utilizes the TCP stack to make a connection to a remote computer and utilizes
         gets the socket address of the socket that connected to the remote computer.
@@ -281,8 +281,10 @@ def get_correspondance_ip_address(ref_ip: str, ref_port: int=1, addr_family=sock
     try:
         sock.connect((ref_ip, ref_port))
         corr_ip, _ = sock.getsockname()
-    except Exception: # pylint: disable=broad-except
-        # If an exception occurs, just return None
+    except OSError:
+        # The socket connect/getsockname failed (no route, bad address family);
+        # there is no correspondence address, so return None. Narrowed from a
+        # bare Exception so programming errors are not masked as a benign None.
         pass
     finally:
         sock.close()
@@ -356,8 +358,16 @@ def get_interface_class(ifname: str) -> InterfaceClass:
     elif "bridge" in if_files_list:
         if_class = InterfaceClass.BRIDGE
     else:
-        ifinfo = subprocess.check_output("ifconfig {} | grep flags".format(ifname), shell=True).decode('utf8')
-        mobj: re.Match = re.match(r"[^<]*.([^>]*)", ifinfo)
+        # Run ifconfig with the interface as a separate argv element (no shell),
+        # then select the 'flags' line in Python — avoids a shell=True string
+        # interpolation injection sink on the public ifname parameter.
+        ifconfig_output = subprocess.check_output(["ifconfig", ifname]).decode('utf8')
+        ifinfo = ""
+        for output_line in ifconfig_output.splitlines():
+            if "flags" in output_line:
+                ifinfo = output_line
+                break
+        mobj: Optional[re.Match] = re.match(r"[^<]*.([^>]*)", ifinfo)
         if mobj is not None:
             ifflags = mobj.groups()[0].strip().split(",")
             if "LOOPBACK" in ifflags:

@@ -200,8 +200,9 @@ class RefreshArpTableTests(unittest.TestCase):
     """
 
     def setUp(self) -> None:
-        self.os_patcher = mock.patch("os.system")
-        self.mock_os_system = self.os_patcher.start()
+        self.popen_patcher = mock.patch("ccai.networking.resolution.subprocess.Popen")
+        self.mock_popen = self.popen_patcher.start()
+        self.mock_popen.return_value = mock.MagicMock()
         self.ifaddrs_patcher = mock.patch("netifaces.ifaddresses")
         self.mock_ifaddresses = self.ifaddrs_patcher.start()
         self.interfaces_patcher = mock.patch(
@@ -215,7 +216,7 @@ class RefreshArpTableTests(unittest.TestCase):
         return
 
     def tearDown(self) -> None:
-        self.os_patcher.stop()
+        self.popen_patcher.stop()
         self.ifaddrs_patcher.stop()
         self.interfaces_patcher.stop()
         return
@@ -223,12 +224,13 @@ class RefreshArpTableTests(unittest.TestCase):
     def test_invokes_ping_for_eligible_interfaces(self) -> None:
         """
             Verify a ping sweep is invoked for the prefix of each non-excluded
-            interface IPv4 address.
+            interface IPv4 address, each as a no-shell argv list.
         """
         resolution.refresh_arp_table()
-        prefix = "192.168.1"
-        expected_cmd = resolution.ARPING_RANGE_CMD % (prefix, prefix)
-        self.mock_os_system.assert_called_with(expected_cmd)
+        targets = [call.args[0][1] for call in self.mock_popen.call_args_list]
+        self.assertTrue(any(t.startswith("192.168.1.") for t in targets))
+        first_argv = self.mock_popen.call_args_list[0].args[0]
+        self.assertEqual(first_argv[0], "ping")
         return
 
     def test_excludes_loopback_by_default(self) -> None:
@@ -237,9 +239,9 @@ class RefreshArpTableTests(unittest.TestCase):
             from being scanned.
         """
         resolution.refresh_arp_table()
-        for call_args in self.mock_os_system.call_args_list:
-            cmd_str = call_args[0][0]
-            self.assertNotIn("127.0", cmd_str)
+        for call_args in self.mock_popen.call_args_list:
+            argv = call_args.args[0]
+            self.assertNotIn("127.0", argv[1])
         return
 
     def test_include_interfaces_overrides_full_enumeration(self) -> None:
@@ -247,7 +249,7 @@ class RefreshArpTableTests(unittest.TestCase):
             Verify supplying ``include_interfaces`` restricts the scan set.
         """
         resolution.refresh_arp_table(include_interfaces=["eth0"])
-        self.assertGreaterEqual(self.mock_os_system.call_count, 1)
+        self.assertGreaterEqual(self.mock_popen.call_count, 1)
         return
 
     def test_returns_none(self) -> None:
