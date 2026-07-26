@@ -1,7 +1,7 @@
 """
     .. module:: test_vpnoverlayprofile
         :platform: Darwin, Linux, Unix, Windows
-        :synopsis: Testbase tests for :mod:`ccai.networking.vpnoverlayprofile`.
+        :synopsis: Testbase tests for :mod:`ccai.interfaces.vpnoverlayprofile`.
 
     .. moduleauthor:: CodeCraftAI Test Author
 """
@@ -9,7 +9,7 @@
 import logging
 
 from ccai.errors.exceptions import ConfigurationError
-from ccai.networking.vpnoverlayprofile import (
+from ccai.interfaces.vpnoverlayprofile import (
     SUPPORTED_VPN_PROVIDERS,
     VPNOverlayProfile,
 )
@@ -143,7 +143,7 @@ def test_from_dict_ignores_unknown_keys_with_warning() -> None:
         "network": "acme.twingate.com",
         "weird_field": 42,
     }
-    target_logger = logging.getLogger("ccai.networking.vpnoverlayprofile")
+    target_logger = logging.getLogger("ccai.interfaces.vpnoverlayprofile")
     captured_records = []
 
     class _ListHandler(logging.Handler):

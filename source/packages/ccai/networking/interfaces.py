@@ -23,7 +23,7 @@ import subprocess
 import netifaces
 
 from ccai.errors.exceptions import ConfigurationError
-from ccai.networking.vpnoverlayprofile import SUPPORTED_VPN_PROVIDERS
+from ccai.interfaces.vpnoverlayprofile import SUPPORTED_VPN_PROVIDERS
 
 class InterfaceClass(IntEnum):
     """
@@ -66,7 +66,7 @@ class InterfaceDescriptor:
         :raises: :class:`ConfigurationError` when the bidirectional
             ``VPN_OVERLAY`` <=> ``provider is not None`` invariant is
             violated, or when ``provider`` is not in
-            :data:`ccai.networking.vpnoverlayprofile.SUPPORTED_VPN_PROVIDERS`.
+            :data:`ccai.interfaces.vpnoverlayprofile.SUPPORTED_VPN_PROVIDERS`.
     """
     name: str
     interface_class: InterfaceClass

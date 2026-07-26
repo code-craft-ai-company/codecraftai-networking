@@ -1,7 +1,7 @@
 """
     .. module:: test_vpnoverlayprofile
         :platform: Darwin, Linux, Unix, Windows
-        :synopsis: Unit tests for :mod:`ccai.networking.vpnoverlayprofile`.
+        :synopsis: Unit tests for :mod:`ccai.interfaces.vpnoverlayprofile`.
 
     .. moduleauthor:: CodeCraftAI Test Author
 """
@@ -10,7 +10,7 @@ import logging
 import unittest
 
 from ccai.errors.exceptions import ConfigurationError
-from ccai.networking.vpnoverlayprofile import (
+from ccai.interfaces.vpnoverlayprofile import (
     SUPPORTED_VPN_PROVIDERS,
     VPNOverlayProfile,
 )
@@ -131,7 +131,7 @@ class FromDictTests(unittest.TestCase):
             "network": "acme.twingate.com",
             "weird_field": 42,
         }
-        with self.assertLogs("ccai.networking.vpnoverlayprofile", level=logging.WARNING) as captured:
+        with self.assertLogs("ccai.interfaces.vpnoverlayprofile", level=logging.WARNING) as captured:
             profile = VPNOverlayProfile.from_dict(data=data)
         self.assertEqual(profile.provider, "twingate")
         joined = "\n".join(captured.output)
