@@ -12,7 +12,8 @@ import unittest
 from typing import Dict, Optional
 from unittest import mock
 
-from hypothesis import HealthCheck, given, settings, strategies as st
+from ccai.testbase.properties import given
+from ccai.testbase.properties import strategies as st
 
 from ccai.networking import resolution
 from ccai.networking.resolution import (
@@ -241,8 +242,7 @@ class ResolveInPlanePropertyTests(unittest.TestCase):
         register_overlay_dns_resolver(resolver=None)
         return
 
-    @settings(max_examples=80, suppress_health_check=[HealthCheck.function_scoped_fixture])
-    @given(name=_name_strategy, plane=_plane_strategy, peers=_peer_map_strategy)
+    @given(name=_name_strategy, plane=_plane_strategy, peers=_peer_map_strategy, constraints={"max_examples": 80})
     def test_p1_totality(self, name: str, plane: AddressPlane, peers: Dict[str, str]) -> None:
         """
             P1 — For any ``plane`` and non-empty ``name``,
@@ -259,8 +259,7 @@ class ResolveInPlanePropertyTests(unittest.TestCase):
         self.assertTrue(rtnval is None or isinstance(rtnval, str))
         return
 
-    @settings(max_examples=80, suppress_health_check=[HealthCheck.function_scoped_fixture])
-    @given(name=_name_strategy)
+    @given(name=_name_strategy, constraints={"max_examples": 80})
     def test_p2_plane_isolation(self, name: str) -> None:
         """
             P2 — Asking for ``OVERLAY`` with an empty peer map and no
@@ -277,8 +276,7 @@ class ResolveInPlanePropertyTests(unittest.TestCase):
         self.assertIsNone(rtnval)
         return
 
-    @settings(max_examples=60, suppress_health_check=[HealthCheck.function_scoped_fixture])
-    @given(name=_name_strategy, plane=_plane_strategy, peers=_peer_map_strategy)
+    @given(name=_name_strategy, plane=_plane_strategy, peers=_peer_map_strategy, constraints={"max_examples": 60})
     def test_p3_idempotence(self, name: str, plane: AddressPlane, peers: Dict[str, str]) -> None:
         """
             P3 — Repeated calls with the same inputs return the same value.
@@ -293,8 +291,7 @@ class ResolveInPlanePropertyTests(unittest.TestCase):
         self.assertEqual(first, second)
         return
 
-    @settings(max_examples=80, suppress_health_check=[HealthCheck.function_scoped_fixture])
-    @given(name=_name_strategy, address=_addr_strategy)
+    @given(name=_name_strategy, address=_addr_strategy, constraints={"max_examples": 80})
     def test_p4_vpn_client_first(self, name: str, address: str) -> None:
         """
             P4 — For any ``name`` present in the vpn_client map, asking
@@ -316,8 +313,7 @@ class ResolveInPlanePropertyTests(unittest.TestCase):
         self.assertEqual(rtnval, address)
         return
 
-    @settings(max_examples=80, suppress_health_check=[HealthCheck.function_scoped_fixture])
-    @given(name=_name_strategy, peers=_peer_map_strategy)
+    @given(name=_name_strategy, peers=_peer_map_strategy, constraints={"max_examples": 80})
     def test_p5_public_resolver_not_consulted_under_overlay(
         self, name: str, peers: Dict[str, str]
     ) -> None:

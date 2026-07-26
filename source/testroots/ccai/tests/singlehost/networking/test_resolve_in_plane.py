@@ -12,7 +12,8 @@ import inspect
 from typing import Dict, Optional
 from unittest import mock
 
-from hypothesis import HealthCheck, given, settings, strategies as st
+from ccai.testbase.properties import given
+from ccai.testbase.properties import strategies as st
 
 from ccai.networking import resolution
 from ccai.networking.resolution import (
@@ -328,8 +329,7 @@ def test_p1_totality() -> None:
     env = _establish_property_env()
     try:
 
-        @settings(max_examples=80, suppress_health_check=[HealthCheck.function_scoped_fixture])
-        @given(name=_name_strategy, plane=_plane_strategy, peers=_peer_map_strategy)
+        @given(name=_name_strategy, plane=_plane_strategy, peers=_peer_map_strategy, constraints={"max_examples": 80})
         def _property(name: str, plane: AddressPlane, peers: Dict[str, str]) -> None:
             client = _PeerClient(peers=peers)
             rtnval = resolve_in_plane(
@@ -356,8 +356,7 @@ def test_p2_plane_isolation() -> None:
     env = _establish_property_env()
     try:
 
-        @settings(max_examples=80, suppress_health_check=[HealthCheck.function_scoped_fixture])
-        @given(name=_name_strategy)
+        @given(name=_name_strategy, constraints={"max_examples": 80})
         def _property(name: str) -> None:
             client = _PeerClient(peers={})
             rtnval = resolve_in_plane(
@@ -382,8 +381,7 @@ def test_p3_idempotence() -> None:
     env = _establish_property_env()
     try:
 
-        @settings(max_examples=60, suppress_health_check=[HealthCheck.function_scoped_fixture])
-        @given(name=_name_strategy, plane=_plane_strategy, peers=_peer_map_strategy)
+        @given(name=_name_strategy, plane=_plane_strategy, peers=_peer_map_strategy, constraints={"max_examples": 60})
         def _property(name: str, plane: AddressPlane, peers: Dict[str, str]) -> None:
             client = _PeerClient(peers=peers)
             first = resolve_in_plane(
@@ -410,8 +408,7 @@ def test_p4_vpn_client_first() -> None:
     env = _establish_property_env()
     try:
 
-        @settings(max_examples=80, suppress_health_check=[HealthCheck.function_scoped_fixture])
-        @given(name=_name_strategy, address=_addr_strategy)
+        @given(name=_name_strategy, address=_addr_strategy, constraints={"max_examples": 80})
         def _property(name: str, address: str) -> None:
             client = _PeerClient(peers={name: address})
             # Registered resolver would otherwise return a different answer.
@@ -442,8 +439,7 @@ def test_p5_public_resolver_not_consulted_under_overlay() -> None:
     env = _establish_property_env()
     try:
 
-        @settings(max_examples=80, suppress_health_check=[HealthCheck.function_scoped_fixture])
-        @given(name=_name_strategy, peers=_peer_map_strategy)
+        @given(name=_name_strategy, peers=_peer_map_strategy, constraints={"max_examples": 80})
         def _property(name: str, peers: Dict[str, str]) -> None:
             client = _PeerClient(peers=peers)
             pub_mock = resolution._resolve_public  # currently patched
