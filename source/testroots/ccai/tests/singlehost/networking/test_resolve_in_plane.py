@@ -320,7 +320,8 @@ def _teardown_property_env(env: Dict[str, object]) -> None:
     return
 
 
-def test_p1_totality() -> None:
+@given(name=_name_strategy, plane=_plane_strategy, peers=_peer_map_strategy, constraints={"max_examples": 80})
+def test_p1_totality(name: str, plane: AddressPlane, peers: Dict[str, str]) -> None:
     """
         P1 — For any ``plane`` and non-empty ``name``,
         :func:`resolve_in_plane` returns ``Optional[str]`` and does
@@ -328,26 +329,22 @@ def test_p1_totality() -> None:
     """
     env = _establish_property_env()
     try:
-
-        @given(name=_name_strategy, plane=_plane_strategy, peers=_peer_map_strategy, constraints={"max_examples": 80})
-        def _property(name: str, plane: AddressPlane, peers: Dict[str, str]) -> None:
-            client = _PeerClient(peers=peers)
-            rtnval = resolve_in_plane(
-                name=name,
-                plane=plane,
-                aspects=_make_aspects(),
-                vpn_client=client,
-            )
-            assert rtnval is None or isinstance(rtnval, str)
-            return
-
-        _property()
+        client = _PeerClient(peers=peers)
+        rtnval = resolve_in_plane(
+            name=name,
+            plane=plane,
+            aspects=_make_aspects(),
+            vpn_client=client,
+        )
+        assert rtnval is None or isinstance(rtnval, str)
+        return
     finally:
         _teardown_property_env(env=env)
     return
 
 
-def test_p2_plane_isolation() -> None:
+@given(name=_name_strategy, constraints={"max_examples": 80})
+def test_p2_plane_isolation(name: str) -> None:
     """
         P2 — Asking for ``OVERLAY`` with an empty peer map and no
         registered overlay DNS resolver returns ``None`` even though
@@ -355,51 +352,43 @@ def test_p2_plane_isolation() -> None:
     """
     env = _establish_property_env()
     try:
-
-        @given(name=_name_strategy, constraints={"max_examples": 80})
-        def _property(name: str) -> None:
-            client = _PeerClient(peers={})
-            rtnval = resolve_in_plane(
-                name=name,
-                plane=AddressPlane.OVERLAY,
-                aspects=_make_aspects(),
-                vpn_client=client,
-            )
-            assert rtnval is None
-            return
-
-        _property()
+        client = _PeerClient(peers={})
+        rtnval = resolve_in_plane(
+            name=name,
+            plane=AddressPlane.OVERLAY,
+            aspects=_make_aspects(),
+            vpn_client=client,
+        )
+        assert rtnval is None
+        return
     finally:
         _teardown_property_env(env=env)
     return
 
 
-def test_p3_idempotence() -> None:
+@given(name=_name_strategy, plane=_plane_strategy, peers=_peer_map_strategy, constraints={"max_examples": 60})
+def test_p3_idempotence(name: str, plane: AddressPlane, peers: Dict[str, str]) -> None:
     """
         P3 — Repeated calls with the same inputs return the same value.
     """
     env = _establish_property_env()
     try:
-
-        @given(name=_name_strategy, plane=_plane_strategy, peers=_peer_map_strategy, constraints={"max_examples": 60})
-        def _property(name: str, plane: AddressPlane, peers: Dict[str, str]) -> None:
-            client = _PeerClient(peers=peers)
-            first = resolve_in_plane(
-                name=name, plane=plane, aspects=_make_aspects(), vpn_client=client,
-            )
-            second = resolve_in_plane(
-                name=name, plane=plane, aspects=_make_aspects(), vpn_client=client,
-            )
-            assert first == second
-            return
-
-        _property()
+        client = _PeerClient(peers=peers)
+        first = resolve_in_plane(
+            name=name, plane=plane, aspects=_make_aspects(), vpn_client=client,
+        )
+        second = resolve_in_plane(
+            name=name, plane=plane, aspects=_make_aspects(), vpn_client=client,
+        )
+        assert first == second
+        return
     finally:
         _teardown_property_env(env=env)
     return
 
 
-def test_p4_vpn_client_first() -> None:
+@given(name=_name_strategy, address=_addr_strategy, constraints={"max_examples": 80})
+def test_p4_vpn_client_first(name: str, address: str) -> None:
     """
         P4 — For any ``name`` present in the vpn_client map, asking
         for ``OVERLAY`` returns the map value regardless of whether
@@ -407,54 +396,45 @@ def test_p4_vpn_client_first() -> None:
     """
     env = _establish_property_env()
     try:
-
-        @given(name=_name_strategy, address=_addr_strategy, constraints={"max_examples": 80})
-        def _property(name: str, address: str) -> None:
-            client = _PeerClient(peers={name: address})
-            # Registered resolver would otherwise return a different answer.
-            register_overlay_dns_resolver(resolver=_OverlayResolver(answer="zzz"))
-            try:
-                rtnval = resolve_in_plane(
-                    name=name,
-                    plane=AddressPlane.OVERLAY,
-                    aspects=_make_aspects(),
-                    vpn_client=client,
-                )
-            finally:
-                register_overlay_dns_resolver(resolver=None)
-            assert rtnval == address
-            return
-
-        _property()
+        client = _PeerClient(peers={name: address})
+        # Registered resolver would otherwise return a different answer.
+        register_overlay_dns_resolver(resolver=_OverlayResolver(answer="zzz"))
+        try:
+            rtnval = resolve_in_plane(
+                name=name,
+                plane=AddressPlane.OVERLAY,
+                aspects=_make_aspects(),
+                vpn_client=client,
+            )
+        finally:
+            register_overlay_dns_resolver(resolver=None)
+        assert rtnval == address
+        return
     finally:
         _teardown_property_env(env=env)
     return
 
 
-def test_p5_public_resolver_not_consulted_under_overlay() -> None:
+@given(name=_name_strategy, peers=_peer_map_strategy, constraints={"max_examples": 80})
+def test_p5_public_resolver_not_consulted_under_overlay(name: str, peers: Dict[str, str]) -> None:
     """
         P5 — The public resolver mock is never called when the
         requested plane is ``OVERLAY``.
     """
     env = _establish_property_env()
     try:
-
-        @given(name=_name_strategy, peers=_peer_map_strategy, constraints={"max_examples": 80})
-        def _property(name: str, peers: Dict[str, str]) -> None:
-            client = _PeerClient(peers=peers)
-            pub_mock = resolution._resolve_public  # currently patched
-            before = pub_mock.call_count  # type: ignore[attr-defined]
-            resolve_in_plane(
-                name=name,
-                plane=AddressPlane.OVERLAY,
-                aspects=_make_aspects(),
-                vpn_client=client,
-            )
-            after = pub_mock.call_count  # type: ignore[attr-defined]
-            assert before == after
-            return
-
-        _property()
+        client = _PeerClient(peers=peers)
+        pub_mock = resolution._resolve_public  # currently patched
+        before = pub_mock.call_count  # type: ignore[attr-defined]
+        resolve_in_plane(
+            name=name,
+            plane=AddressPlane.OVERLAY,
+            aspects=_make_aspects(),
+            vpn_client=client,
+        )
+        after = pub_mock.call_count  # type: ignore[attr-defined]
+        assert before == after
+        return
     finally:
         _teardown_property_env(env=env)
     return
