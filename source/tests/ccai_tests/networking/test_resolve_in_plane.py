@@ -8,11 +8,11 @@
 """
 
 import inspect
-import random
 import unittest
 from typing import Dict, Optional
 from unittest import mock
 
+from ccai.testbase.properties import run_property
 from ccai.testbase.properties import strategies as st
 
 from ccai.networking import resolution
@@ -218,20 +218,6 @@ _addr_strategy = st.text(min_size=1, max_size=39)
 _peer_map_strategy = st.dictionaries(_name_strategy, _addr_strategy, max_size=8)
 
 
-def _run_property(test: unittest.TestCase, check, max_examples: int, **strategies) -> None:
-    """
-        Runs ``check`` against ``max_examples`` generated inputs. ``@given`` from ccai.testbase only marks a
-        test for the testbase sequencer's property runner; under plain unittest the examples have to be drawn
-        here, from a fixed seed so a failure reproduces.
-    """
-    rng = random.Random(0x5EED)
-    for index in range(max_examples):
-        kwargs = {name: strategy.generate(rng) for name, strategy in strategies.items()}
-        with test.subTest(example=index, **{name: repr(value)[:48] for name, value in kwargs.items()}):
-            check(**kwargs)
-    return
-
-
 class ResolveInPlanePropertyTests(unittest.TestCase):
     """
         Hypothesis property tests for :func:`resolve_in_plane`.
@@ -257,7 +243,7 @@ class ResolveInPlanePropertyTests(unittest.TestCase):
         return
 
     def test_p1_totality(self) -> None:
-        _run_property(self, self._test_p1_totality, 80, name=_name_strategy, plane=_plane_strategy, peers=_peer_map_strategy)
+        run_property(self._test_p1_totality, 80, case=self, name=_name_strategy, plane=_plane_strategy, peers=_peer_map_strategy)
         return
 
     def _test_p1_totality(self, name: str, plane: AddressPlane, peers: Dict[str, str]) -> None:
@@ -277,7 +263,7 @@ class ResolveInPlanePropertyTests(unittest.TestCase):
         return
 
     def test_p2_plane_isolation(self) -> None:
-        _run_property(self, self._test_p2_plane_isolation, 80, name=_name_strategy)
+        run_property(self._test_p2_plane_isolation, 80, case=self, name=_name_strategy)
         return
 
     def _test_p2_plane_isolation(self, name: str) -> None:
@@ -297,7 +283,7 @@ class ResolveInPlanePropertyTests(unittest.TestCase):
         return
 
     def test_p3_idempotence(self) -> None:
-        _run_property(self, self._test_p3_idempotence, 60, name=_name_strategy, plane=_plane_strategy, peers=_peer_map_strategy)
+        run_property(self._test_p3_idempotence, 60, case=self, name=_name_strategy, plane=_plane_strategy, peers=_peer_map_strategy)
         return
 
     def _test_p3_idempotence(self, name: str, plane: AddressPlane, peers: Dict[str, str]) -> None:
@@ -315,7 +301,7 @@ class ResolveInPlanePropertyTests(unittest.TestCase):
         return
 
     def test_p4_vpn_client_first(self) -> None:
-        _run_property(self, self._test_p4_vpn_client_first, 80, name=_name_strategy, address=_addr_strategy)
+        run_property(self._test_p4_vpn_client_first, 80, case=self, name=_name_strategy, address=_addr_strategy)
         return
 
     def _test_p4_vpn_client_first(self, name: str, address: str) -> None:
@@ -340,7 +326,7 @@ class ResolveInPlanePropertyTests(unittest.TestCase):
         return
 
     def test_p5_public_resolver_not_consulted_under_overlay(self) -> None:
-        _run_property(self, self._test_p5_public_resolver_not_consulted_under_overlay, 80, name=_name_strategy, peers=_peer_map_strategy)
+        run_property(self._test_p5_public_resolver_not_consulted_under_overlay, 80, case=self, name=_name_strategy, peers=_peer_map_strategy)
         return
 
     def _test_p5_public_resolver_not_consulted_under_overlay(self, name: str, peers: Dict[str, str]) -> None:
