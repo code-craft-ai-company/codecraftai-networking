@@ -8,11 +8,11 @@
 """
 
 import inspect
+import random
 import unittest
 from typing import Dict, Optional
 from unittest import mock
 
-from ccai.testbase.properties import given
 from ccai.testbase.properties import strategies as st
 
 from ccai.networking import resolution
@@ -218,6 +218,20 @@ _addr_strategy = st.text(min_size=1, max_size=39)
 _peer_map_strategy = st.dictionaries(_name_strategy, _addr_strategy, max_size=8)
 
 
+def _run_property(test: unittest.TestCase, check, max_examples: int, **strategies) -> None:
+    """
+        Runs ``check`` against ``max_examples`` generated inputs. ``@given`` from ccai.testbase only marks a
+        test for the testbase sequencer's property runner; under plain unittest the examples have to be drawn
+        here, from a fixed seed so a failure reproduces.
+    """
+    rng = random.Random(0x5EED)
+    for index in range(max_examples):
+        kwargs = {name: strategy.generate(rng) for name, strategy in strategies.items()}
+        with test.subTest(example=index, **{name: repr(value)[:48] for name, value in kwargs.items()}):
+            check(**kwargs)
+    return
+
+
 class ResolveInPlanePropertyTests(unittest.TestCase):
     """
         Hypothesis property tests for :func:`resolve_in_plane`.
@@ -242,8 +256,11 @@ class ResolveInPlanePropertyTests(unittest.TestCase):
         register_overlay_dns_resolver(resolver=None)
         return
 
-    @given(name=_name_strategy, plane=_plane_strategy, peers=_peer_map_strategy, constraints={"max_examples": 80})
-    def test_p1_totality(self, name: str, plane: AddressPlane, peers: Dict[str, str]) -> None:
+    def test_p1_totality(self) -> None:
+        _run_property(self, self._test_p1_totality, 80, name=_name_strategy, plane=_plane_strategy, peers=_peer_map_strategy)
+        return
+
+    def _test_p1_totality(self, name: str, plane: AddressPlane, peers: Dict[str, str]) -> None:
         """
             P1 — For any ``plane`` and non-empty ``name``,
             :func:`resolve_in_plane` returns ``Optional[str]`` and does
@@ -259,8 +276,11 @@ class ResolveInPlanePropertyTests(unittest.TestCase):
         self.assertTrue(rtnval is None or isinstance(rtnval, str))
         return
 
-    @given(name=_name_strategy, constraints={"max_examples": 80})
-    def test_p2_plane_isolation(self, name: str) -> None:
+    def test_p2_plane_isolation(self) -> None:
+        _run_property(self, self._test_p2_plane_isolation, 80, name=_name_strategy)
+        return
+
+    def _test_p2_plane_isolation(self, name: str) -> None:
         """
             P2 — Asking for ``OVERLAY`` with an empty peer map and no
             registered overlay DNS resolver returns ``None`` even though
@@ -276,8 +296,11 @@ class ResolveInPlanePropertyTests(unittest.TestCase):
         self.assertIsNone(rtnval)
         return
 
-    @given(name=_name_strategy, plane=_plane_strategy, peers=_peer_map_strategy, constraints={"max_examples": 60})
-    def test_p3_idempotence(self, name: str, plane: AddressPlane, peers: Dict[str, str]) -> None:
+    def test_p3_idempotence(self) -> None:
+        _run_property(self, self._test_p3_idempotence, 60, name=_name_strategy, plane=_plane_strategy, peers=_peer_map_strategy)
+        return
+
+    def _test_p3_idempotence(self, name: str, plane: AddressPlane, peers: Dict[str, str]) -> None:
         """
             P3 — Repeated calls with the same inputs return the same value.
         """
@@ -291,8 +314,11 @@ class ResolveInPlanePropertyTests(unittest.TestCase):
         self.assertEqual(first, second)
         return
 
-    @given(name=_name_strategy, address=_addr_strategy, constraints={"max_examples": 80})
-    def test_p4_vpn_client_first(self, name: str, address: str) -> None:
+    def test_p4_vpn_client_first(self) -> None:
+        _run_property(self, self._test_p4_vpn_client_first, 80, name=_name_strategy, address=_addr_strategy)
+        return
+
+    def _test_p4_vpn_client_first(self, name: str, address: str) -> None:
         """
             P4 — For any ``name`` present in the vpn_client map, asking
             for ``OVERLAY`` returns the map value regardless of whether
@@ -313,10 +339,11 @@ class ResolveInPlanePropertyTests(unittest.TestCase):
         self.assertEqual(rtnval, address)
         return
 
-    @given(name=_name_strategy, peers=_peer_map_strategy, constraints={"max_examples": 80})
-    def test_p5_public_resolver_not_consulted_under_overlay(
-        self, name: str, peers: Dict[str, str]
-    ) -> None:
+    def test_p5_public_resolver_not_consulted_under_overlay(self) -> None:
+        _run_property(self, self._test_p5_public_resolver_not_consulted_under_overlay, 80, name=_name_strategy, peers=_peer_map_strategy)
+        return
+
+    def _test_p5_public_resolver_not_consulted_under_overlay(self, name: str, peers: Dict[str, str]) -> None:
         """
             P5 — The public resolver mock is never called when the
             requested plane is ``OVERLAY``.
