@@ -10,7 +10,7 @@ import socket
 import struct
 import unittest
 from typing import List, Optional, Tuple
-from unittest import mock
+import unittest.mock
 
 from ccai.networking import multicast
 from ccai.networking.constants import IPPROTO_IPV6, SO_RECV_ANYIF
@@ -68,7 +68,7 @@ class MulticastListenerSocketIpv4Tests(unittest.TestCase):
 
     def setUp(self) -> None:
         self.fake_sock = FakeSocket()
-        self.socket_patcher = mock.patch("socket.socket", return_value=self.fake_sock)
+        self.socket_patcher = unittest.mock.patch("socket.socket", return_value=self.fake_sock)
         self.mock_socket = self.socket_patcher.start()
         return
 
@@ -147,7 +147,7 @@ class MulticastListenerSocketIpv6Tests(unittest.TestCase):
 
     def setUp(self) -> None:
         self.fake_sock = FakeSocket()
-        self.socket_patcher = mock.patch("socket.socket", return_value=self.fake_sock)
+        self.socket_patcher = unittest.mock.patch("socket.socket", return_value=self.fake_sock)
         self.mock_socket = self.socket_patcher.start()
         return
 
@@ -216,9 +216,9 @@ class MulticastListenerSocketForIfaceTests(unittest.TestCase):
 
     def setUp(self) -> None:
         self.fake_sock = FakeSocket()
-        self.socket_patcher = mock.patch("socket.socket", return_value=self.fake_sock)
+        self.socket_patcher = unittest.mock.patch("socket.socket", return_value=self.fake_sock)
         self.mock_socket = self.socket_patcher.start()
-        self.if_index_patcher = mock.patch(
+        self.if_index_patcher = unittest.mock.patch(
             "socket.if_nametoindex", return_value=2
         )
         self.if_index_patcher.start()
@@ -234,7 +234,7 @@ class MulticastListenerSocketForIfaceTests(unittest.TestCase):
             Verify the IPv4 per-interface listener sets ``IP_MULTICAST_IF`` and
             joins the multicast group with the interface IP.
         """
-        with mock.patch(
+        with unittest.mock.patch(
             "ccai.networking.multicast.get_ipv4_address",
             return_value="192.168.0.10",
         ):
@@ -264,10 +264,10 @@ class MulticastListenerSocketForIfaceTests(unittest.TestCase):
             Verify the IPv6 per-interface listener resolves the interface
             index and joins the IPv6 multicast group.
         """
-        with mock.patch(
+        with unittest.mock.patch(
             "ccai.networking.multicast.get_ipv6_address",
             return_value="fe80::1",
-        ), mock.patch(
+        ), unittest.mock.patch(
             "ccai.networking.multicast.socket.inet_aton",
             return_value=b"\x00" * 4,
         ):

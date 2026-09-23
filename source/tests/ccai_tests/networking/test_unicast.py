@@ -10,7 +10,7 @@ import socket
 import struct
 import unittest
 from typing import List, Optional, Tuple
-from unittest import mock
+import unittest.mock
 
 from ccai.networking import unicast
 from ccai.networking.constants import IPPROTO_IPV6, SO_RECV_ANYIF
@@ -67,7 +67,7 @@ class CreateUnicastSocketIpv4Tests(unittest.TestCase):
 
     def setUp(self) -> None:
         self.fake_sock = FakeSocket()
-        self.patcher = mock.patch("socket.socket", return_value=self.fake_sock)
+        self.patcher = unittest.mock.patch("socket.socket", return_value=self.fake_sock)
         self.mock_socket_factory = self.patcher.start()
         return
 
@@ -150,7 +150,7 @@ class CreateUnicastSocketIpv6Tests(unittest.TestCase):
 
     def setUp(self) -> None:
         self.fake_sock = FakeSocket()
-        self.patcher = mock.patch("socket.socket", return_value=self.fake_sock)
+        self.patcher = unittest.mock.patch("socket.socket", return_value=self.fake_sock)
         self.mock_socket_factory = self.patcher.start()
         return
 

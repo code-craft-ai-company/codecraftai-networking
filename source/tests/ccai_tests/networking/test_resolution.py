@@ -8,7 +8,7 @@
 
 import unittest
 from io import StringIO
-from unittest import mock
+import unittest.mock
 
 import netifaces
 
@@ -145,7 +145,7 @@ class GetArpTableTests(unittest.TestCase):
             "192.168.1.1 0x1 0x2 aa:bb:cc:dd:ee:ff * eth0\n"
             "10.0.0.1 0x1 0x2 11:22:33:44:55:66 * wlan0\n"
         )
-        with mock.patch("builtins.open", return_value=StringIO(arp_data)):
+        with unittest.mock.patch("builtins.open", return_value=StringIO(arp_data)):
             rtnval = resolution.get_arp_table()
 
         self.assertIn("aa:bb:cc:dd:ee:ff", rtnval)
@@ -162,7 +162,7 @@ class GetArpTableTests(unittest.TestCase):
             "IP address HW type Flags HW address Mask Device\n"
             "192.168.1.1 0x1 0x2 aa:bb:cc:dd:ee:ff * eth0\n"
         )
-        with mock.patch("builtins.open", return_value=StringIO(arp_data)):
+        with unittest.mock.patch("builtins.open", return_value=StringIO(arp_data)):
             rtnval = resolution.get_arp_table(normalize_hwaddr=True)
 
         self.assertIn("AABBCCDDEEFF", rtnval)
@@ -173,7 +173,7 @@ class GetArpTableTests(unittest.TestCase):
         """
             Verify a missing ``/proc/net/arp`` (non-Linux) returns ``{}``.
         """
-        with mock.patch("builtins.open", side_effect=FileNotFoundError()):
+        with unittest.mock.patch("builtins.open", side_effect=FileNotFoundError()):
             rtnval = resolution.get_arp_table()
         self.assertEqual(rtnval, {})
         return
@@ -187,7 +187,7 @@ class GetArpTableTests(unittest.TestCase):
             "incomplete line\n"
             "192.168.1.1 0x1 0x2 aa:bb:cc:dd:ee:ff * eth0\n"
         )
-        with mock.patch("builtins.open", return_value=StringIO(arp_data)):
+        with unittest.mock.patch("builtins.open", return_value=StringIO(arp_data)):
             rtnval = resolution.get_arp_table()
 
         self.assertEqual(len(rtnval), 1)
@@ -200,12 +200,12 @@ class RefreshArpTableTests(unittest.TestCase):
     """
 
     def setUp(self) -> None:
-        self.popen_patcher = mock.patch("ccai.networking.resolution.subprocess.Popen")
+        self.popen_patcher = unittest.mock.patch("ccai.networking.resolution.subprocess.Popen")
         self.mock_popen = self.popen_patcher.start()
-        self.mock_popen.return_value = mock.MagicMock()
-        self.ifaddrs_patcher = mock.patch("netifaces.ifaddresses")
+        self.mock_popen.return_value = unittest.mock.MagicMock()
+        self.ifaddrs_patcher = unittest.mock.patch("netifaces.ifaddresses")
         self.mock_ifaddresses = self.ifaddrs_patcher.start()
-        self.interfaces_patcher = mock.patch(
+        self.interfaces_patcher = unittest.mock.patch(
             "netifaces.interfaces", return_value=["eth0", "lo"]
         )
         self.interfaces_patcher.start()

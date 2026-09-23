@@ -8,7 +8,7 @@
 
 import subprocess
 import unittest
-from unittest import mock
+import unittest.mock
 
 from ccai.networking import arp
 
@@ -26,7 +26,7 @@ class GetArpTableLinuxTests(unittest.TestCase):
             "192.168.1.1 dev eth0 lladdr 00:1d:a1:b1:c5:df REACHABLE\n"
             "10.0.0.1 dev wlan0 lladdr 5c:bd:e2:2e:a3:25 STALE\n"
         )
-        with mock.patch("platform.system", return_value="Linux"), mock.patch(
+        with unittest.mock.patch("platform.system", return_value="Linux"), unittest.mock.patch(
             "subprocess.check_output", return_value=linux_output
         ):
             rtnval = arp.get_arp_table()
@@ -50,7 +50,7 @@ class GetArpTableLinuxTests(unittest.TestCase):
         """
             Verify an empty ARP table yields an empty result list.
         """
-        with mock.patch("platform.system", return_value="Linux"), mock.patch(
+        with unittest.mock.patch("platform.system", return_value="Linux"), unittest.mock.patch(
             "subprocess.check_output", return_value=""
         ):
             rtnval = arp.get_arp_table()
@@ -65,7 +65,7 @@ class GetArpTableLinuxTests(unittest.TestCase):
             "192.168.1.50 dev eth0  FAILED\n"
             "192.168.1.1 dev eth0 lladdr 00:1d:a1:b1:c5:df REACHABLE\n"
         )
-        with mock.patch("platform.system", return_value="Linux"), mock.patch(
+        with unittest.mock.patch("platform.system", return_value="Linux"), unittest.mock.patch(
             "subprocess.check_output", return_value=linux_output
         ):
             rtnval = arp.get_arp_table()
@@ -78,7 +78,7 @@ class GetArpTableLinuxTests(unittest.TestCase):
             Verify IPv6 neighbour entries are parsed.
         """
         linux_output = "fe80::1 dev eth0 lladdr aa:bb:cc:dd:ee:ff router REACHABLE\n"
-        with mock.patch("platform.system", return_value="Linux"), mock.patch(
+        with unittest.mock.patch("platform.system", return_value="Linux"), unittest.mock.patch(
             "subprocess.check_output", return_value=linux_output
         ):
             rtnval = arp.get_arp_table()
@@ -103,7 +103,7 @@ class GetArpTableWindowsTests(unittest.TestCase):
             "  192.168.1.1           00-1D-A1-B1-C5-DF     dynamic\n"
             "  10.0.0.1              5c-bd-e2-2e-a3-25     dynamic\n"
         )
-        with mock.patch("platform.system", return_value="Windows"), mock.patch(
+        with unittest.mock.patch("platform.system", return_value="Windows"), unittest.mock.patch(
             "subprocess.check_output", return_value=windows_output
         ):
             rtnval = arp.get_arp_table()
@@ -127,7 +127,7 @@ class GetArpTableWindowsTests(unittest.TestCase):
         """
             Verify an empty Windows ARP table yields an empty result list.
         """
-        with mock.patch("platform.system", return_value="Windows"), mock.patch(
+        with unittest.mock.patch("platform.system", return_value="Windows"), unittest.mock.patch(
             "subprocess.check_output", return_value=""
         ):
             rtnval = arp.get_arp_table()
@@ -146,7 +146,7 @@ class GetArpTableErrorPathTests(unittest.TestCase):
             and swallow the failure.
         """
         err = subprocess.CalledProcessError(returncode=1, cmd=["ip", "neigh"])
-        with mock.patch("platform.system", return_value="Linux"), mock.patch(
+        with unittest.mock.patch("platform.system", return_value="Linux"), unittest.mock.patch(
             "subprocess.check_output", side_effect=err
         ):
             rtnval = arp.get_arp_table()

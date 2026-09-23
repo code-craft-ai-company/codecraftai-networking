@@ -10,7 +10,7 @@
 import inspect
 import unittest
 from typing import Dict, Optional
-from unittest import mock
+import unittest.mock
 
 from ccai.testbase.properties import run_property
 from ccai.testbase.properties import strategies as st
@@ -80,7 +80,7 @@ class ResolveInPlaneDispatchTests(unittest.TestCase):
         """
             Verify ``PUBLIC`` delegates to :func:`_resolve_public`.
         """
-        with mock.patch.object(resolution, "_resolve_public", return_value="1.2.3.4") as pub:
+        with unittest.mock.patch.object(resolution, "_resolve_public", return_value="1.2.3.4") as pub:
             rtnval = resolve_in_plane(
                 name="host.example.com",
                 plane=AddressPlane.PUBLIC,
@@ -94,7 +94,7 @@ class ResolveInPlaneDispatchTests(unittest.TestCase):
         """
             Verify ``PRIVATE`` delegates to :func:`_resolve_private`.
         """
-        with mock.patch.object(resolution, "_resolve_private", return_value="10.0.0.5") as priv:
+        with unittest.mock.patch.object(resolution, "_resolve_private", return_value="10.0.0.5") as priv:
             rtnval = resolve_in_plane(
                 name="host.internal",
                 plane=AddressPlane.PRIVATE,
@@ -158,7 +158,7 @@ class ResolveInPlaneDispatchTests(unittest.TestCase):
             even when the public resolver would have answered.
         """
         client = _PeerClient(peers={})
-        with mock.patch.object(resolution, "_resolve_public", return_value="1.2.3.4") as pub:
+        with unittest.mock.patch.object(resolution, "_resolve_public", return_value="1.2.3.4") as pub:
             rtnval = resolve_in_plane(
                 name="db4",
                 plane=AddressPlane.OVERLAY,
@@ -226,10 +226,10 @@ class ResolveInPlanePropertyTests(unittest.TestCase):
     def setUp(self) -> None:
         register_overlay_dns_resolver(resolver=None)
         # Stub the OS resolvers so totality tests are network-free.
-        self._public_patcher = mock.patch.object(
+        self._public_patcher = unittest.mock.patch.object(
             resolution, "_resolve_public", return_value="9.9.9.9"
         )
-        self._private_patcher = mock.patch.object(
+        self._private_patcher = unittest.mock.patch.object(
             resolution, "_resolve_private", return_value="10.10.10.10"
         )
         self._public_patcher.start()

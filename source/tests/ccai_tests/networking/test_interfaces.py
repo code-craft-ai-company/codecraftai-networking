@@ -8,7 +8,7 @@
 
 import socket
 import unittest
-from unittest import mock
+import unittest.mock
 
 import netifaces
 
@@ -47,7 +47,7 @@ class GetAllIpv4InterfacesTests(unittest.TestCase):
 
     def setUp(self) -> None:
         self.ifnames = ["eth0", "lo", "wlan0"]
-        self.interfaces_patcher = mock.patch(
+        self.interfaces_patcher = unittest.mock.patch(
             "netifaces.interfaces", return_value=self.ifnames
         )
         self.interfaces_patcher.start()
@@ -62,7 +62,7 @@ class GetAllIpv4InterfacesTests(unittest.TestCase):
             rtnval = self.addr_map.get(ifname, {})
             return rtnval
 
-        self.ifaddresses_patcher = mock.patch(
+        self.ifaddresses_patcher = unittest.mock.patch(
             "netifaces.ifaddresses", side_effect=fake_ifaddresses
         )
         self.ifaddresses_patcher.start()
@@ -108,7 +108,7 @@ class GetAllIpv6InterfacesTests(unittest.TestCase):
 
     def setUp(self) -> None:
         self.ifnames = ["eth0", "lo", "wlan0"]
-        self.interfaces_patcher = mock.patch(
+        self.interfaces_patcher = unittest.mock.patch(
             "netifaces.interfaces", return_value=self.ifnames
         )
         self.interfaces_patcher.start()
@@ -126,7 +126,7 @@ class GetAllIpv6InterfacesTests(unittest.TestCase):
             rtnval = self.addr_map.get(ifname, {})
             return rtnval
 
-        self.ifaddresses_patcher = mock.patch(
+        self.ifaddresses_patcher = unittest.mock.patch(
             "netifaces.ifaddresses", side_effect=fake_ifaddresses
         )
         self.ifaddresses_patcher.start()
@@ -167,7 +167,7 @@ class GetIpv4AddressTests(unittest.TestCase):
             Verify the first IPv4 address is returned for an interface.
         """
         addr_table = {netifaces.AF_INET: [{"addr": "10.0.0.5"}]}
-        with mock.patch("netifaces.ifaddresses", return_value=addr_table):
+        with unittest.mock.patch("netifaces.ifaddresses", return_value=addr_table):
             rtnval = interfaces.get_ipv4_address("eth0")
         self.assertEqual(rtnval, "10.0.0.5")
         return
@@ -177,7 +177,7 @@ class GetIpv4AddressTests(unittest.TestCase):
             Verify ``None`` is returned when the interface has no IPv4 address.
         """
         addr_table = {netifaces.AF_INET6: [{"addr": "fe80::1"}]}
-        with mock.patch("netifaces.ifaddresses", return_value=addr_table):
+        with unittest.mock.patch("netifaces.ifaddresses", return_value=addr_table):
             rtnval = interfaces.get_ipv4_address("eth0")
         self.assertIsNone(rtnval)
         return
@@ -196,7 +196,7 @@ class GetIpv6AddressTests(unittest.TestCase):
             netifaces.AF_INET6: [{"addr": "fe80::1"}],
             netifaces.AF_INET: [{"addr": "127.0.0.1"}],
         }
-        with mock.patch("netifaces.ifaddresses", return_value=addr_table):
+        with unittest.mock.patch("netifaces.ifaddresses", return_value=addr_table):
             rtnval = interfaces.get_ipv6_address("eth0")
         self.assertEqual(rtnval, "fe80::1")
         return
@@ -206,7 +206,7 @@ class GetIpv6AddressTests(unittest.TestCase):
             Verify ``None`` is returned when the interface has no IPv6 address.
         """
         addr_table = {netifaces.AF_INET: [{"addr": "10.0.0.5"}]}
-        with mock.patch("netifaces.ifaddresses", return_value=addr_table):
+        with unittest.mock.patch("netifaces.ifaddresses", return_value=addr_table):
             rtnval = interfaces.get_ipv6_address("eth0")
         self.assertIsNone(rtnval)
         return
@@ -222,10 +222,10 @@ class GetCorrespondanceIpAddressTests(unittest.TestCase):
             Verify the function returns the local socket name's address
             after connecting.
         """
-        mock_sock = mock.MagicMock()
+        mock_sock = unittest.mock.MagicMock()
         mock_sock.getsockname.return_value = ("10.0.0.5", 12345)
 
-        with mock.patch("socket.socket", return_value=mock_sock):
+        with unittest.mock.patch("socket.socket", return_value=mock_sock):
             rtnval = interfaces.get_correspondance_ip_address("8.8.8.8", ref_port=53)
 
         self.assertEqual(rtnval, "10.0.0.5")
@@ -237,10 +237,10 @@ class GetCorrespondanceIpAddressTests(unittest.TestCase):
         """
             Verify the function returns ``None`` when connect raises.
         """
-        mock_sock = mock.MagicMock()
+        mock_sock = unittest.mock.MagicMock()
         mock_sock.connect.side_effect = OSError("Network unreachable")
 
-        with mock.patch("socket.socket", return_value=mock_sock):
+        with unittest.mock.patch("socket.socket", return_value=mock_sock):
             rtnval = interfaces.get_correspondance_ip_address("8.8.8.8", ref_port=53)
 
         self.assertIsNone(rtnval)
@@ -257,10 +257,10 @@ class GetCorrespondanceInterfaceTests(unittest.TestCase):
         """
             Verify both returns are ``None`` when no correspondence IP is found.
         """
-        with mock.patch(
+        with unittest.mock.patch(
             "ccai.networking.interfaces.get_correspondance_ip_address",
             return_value=None,
-        ) as gcia, mock.patch(
+        ) as gcia, unittest.mock.patch(
             "ccai.networking.interfaces.get_interface_for_ip"
         ) as gifip:
             iface, ip = interfaces.get_correspondance_interface("1.1.1.1", 80)
@@ -275,10 +275,10 @@ class GetCorrespondanceInterfaceTests(unittest.TestCase):
         """
             Verify the (interface, ip) tuple is returned on success.
         """
-        with mock.patch(
+        with unittest.mock.patch(
             "ccai.networking.interfaces.get_correspondance_ip_address",
             return_value="1.2.3.4",
-        ), mock.patch(
+        ), unittest.mock.patch(
             "ccai.networking.interfaces.get_interface_for_ip",
             return_value="eth0",
         ):
@@ -309,9 +309,9 @@ class GetInterfaceForIpTests(unittest.TestCase):
             rtnval = addr_map.get(ifname, {})
             return rtnval
 
-        with mock.patch("socket.getaddrinfo", return_value=addr_info), mock.patch(
+        with unittest.mock.patch("socket.getaddrinfo", return_value=addr_info), unittest.mock.patch(
             "netifaces.interfaces", return_value=ifnames
-        ), mock.patch("netifaces.ifaddresses", side_effect=fake_ifaddresses):
+        ), unittest.mock.patch("netifaces.ifaddresses", side_effect=fake_ifaddresses):
             rtnval = interfaces.get_interface_for_ip("10.0.0.5")
 
         self.assertEqual(rtnval, "eth0")
@@ -331,9 +331,9 @@ class GetInterfaceForIpTests(unittest.TestCase):
             rtnval = addr_map.get(ifname, {})
             return rtnval
 
-        with mock.patch("socket.getaddrinfo", return_value=addr_info), mock.patch(
+        with unittest.mock.patch("socket.getaddrinfo", return_value=addr_info), unittest.mock.patch(
             "netifaces.interfaces", return_value=ifnames
-        ), mock.patch("netifaces.ifaddresses", side_effect=fake_ifaddresses):
+        ), unittest.mock.patch("netifaces.ifaddresses", side_effect=fake_ifaddresses):
             rtnval = interfaces.get_interface_for_ip("10.0.0.5")
 
         self.assertIsNone(rtnval)
@@ -350,7 +350,7 @@ class GetInterfaceClassTests(unittest.TestCase):
         """
             Verify a missing /sys/class/net path raises FileNotFoundError.
         """
-        with mock.patch("os.path.exists", return_value=False):
+        with unittest.mock.patch("os.path.exists", return_value=False):
             with self.assertRaises(FileNotFoundError):
                 interfaces.get_interface_class("eth0")
         return
@@ -359,7 +359,7 @@ class GetInterfaceClassTests(unittest.TestCase):
         """
             Verify a directory listing containing 'wireless' yields WIRELESS.
         """
-        with mock.patch("os.path.exists", return_value=True), mock.patch(
+        with unittest.mock.patch("os.path.exists", return_value=True), unittest.mock.patch(
             "os.listdir", return_value=["wireless", "address"]
         ):
             rtnval = interfaces.get_interface_class("wlan0")
@@ -370,7 +370,7 @@ class GetInterfaceClassTests(unittest.TestCase):
         """
             Verify a directory listing containing 'bridge' yields BRIDGE.
         """
-        with mock.patch("os.path.exists", return_value=True), mock.patch(
+        with unittest.mock.patch("os.path.exists", return_value=True), unittest.mock.patch(
             "os.listdir", return_value=["bridge", "address"]
         ):
             rtnval = interfaces.get_interface_class("br0")
@@ -382,9 +382,9 @@ class GetInterfaceClassTests(unittest.TestCase):
             Verify ifconfig flags containing 'LOOPBACK' yield LOOPBACK.
         """
         ifconfig_output = "lo: flags=8049<UP,LOOPBACK,RUNNING,MULTICAST>\n"
-        with mock.patch("os.path.exists", return_value=True), mock.patch(
+        with unittest.mock.patch("os.path.exists", return_value=True), unittest.mock.patch(
             "os.listdir", return_value=["address"]
-        ), mock.patch(
+        ), unittest.mock.patch(
             "subprocess.check_output", return_value=ifconfig_output.encode("utf8")
         ):
             rtnval = interfaces.get_interface_class("lo")
@@ -396,9 +396,9 @@ class GetInterfaceClassTests(unittest.TestCase):
             Verify ifconfig flags containing 'POINTTOPOINT' yield TUNNEL.
         """
         ifconfig_output = "tun0: flags=8051<UP,POINTTOPOINT,RUNNING>\n"
-        with mock.patch("os.path.exists", return_value=True), mock.patch(
+        with unittest.mock.patch("os.path.exists", return_value=True), unittest.mock.patch(
             "os.listdir", return_value=["address"]
-        ), mock.patch(
+        ), unittest.mock.patch(
             "subprocess.check_output", return_value=ifconfig_output.encode("utf8")
         ):
             rtnval = interfaces.get_interface_class("tun0")
@@ -410,9 +410,9 @@ class GetInterfaceClassTests(unittest.TestCase):
             Verify a regular interface yields WIRED.
         """
         ifconfig_output = "eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>\n"
-        with mock.patch("os.path.exists", return_value=True), mock.patch(
+        with unittest.mock.patch("os.path.exists", return_value=True), unittest.mock.patch(
             "os.listdir", return_value=["address"]
-        ), mock.patch(
+        ), unittest.mock.patch(
             "subprocess.check_output", return_value=ifconfig_output.encode("utf8")
         ):
             rtnval = interfaces.get_interface_class("eth0")
@@ -440,7 +440,7 @@ class GetInterfaceClassTableTests(unittest.TestCase):
             )
             return rtnval
 
-        with mock.patch("netifaces.interfaces", return_value=ifnames), mock.patch(
+        with unittest.mock.patch("netifaces.interfaces", return_value=ifnames), unittest.mock.patch(
             "ccai.networking.interfaces.get_interface_class",
             side_effect=fake_get_class,
         ):
@@ -459,7 +459,7 @@ class GetInterfaceClassTableTests(unittest.TestCase):
             "eth0": InterfaceClass.WIRED,
             "wlan0": InterfaceClass.WIRELESS,
         }
-        with mock.patch(
+        with unittest.mock.patch(
             "ccai.networking.interfaces.get_interface_class_table",
             return_value=table,
         ):

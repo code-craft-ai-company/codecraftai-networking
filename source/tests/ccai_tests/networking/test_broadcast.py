@@ -9,7 +9,7 @@
 import socket
 import unittest
 from typing import Optional, Tuple
-from unittest import mock
+import unittest.mock
 
 from ccai.networking import broadcast
 
@@ -60,7 +60,7 @@ class BroadcastWakeOnLanTests(unittest.TestCase):
 
     def setUp(self) -> None:
         self.fake_sock = FakeSocket()
-        self.patcher = mock.patch("socket.socket", return_value=self.fake_sock)
+        self.patcher = unittest.mock.patch("socket.socket", return_value=self.fake_sock)
         self.patcher.start()
         return
 

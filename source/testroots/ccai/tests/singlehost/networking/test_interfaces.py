@@ -7,7 +7,7 @@
 """
 
 import socket
-from typing import Dict, List, Tuple
+from typing import Dict, Tuple
 from unittest import mock
 
 import netifaces
