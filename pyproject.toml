@@ -1,6 +1,6 @@
 [project]
 name = "codecraftai-networking"
-version = "1.3.1"
+version = "1.3.2"
 description = "Code Craft AI - Networking Package"
 readme = "README.rst"
 license = "LicenseRef-CodeCraftAI-Source-Available"
