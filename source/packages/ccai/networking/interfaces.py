@@ -20,7 +20,7 @@ import re
 import socket
 import subprocess
 
-import netifaces
+from ccai.networking import nativeinterfaces
 
 from ccai.errors.exceptions import ConfigurationError
 from ccai.interfaces.vpnoverlayprofile import SUPPORTED_VPN_PROVIDERS
@@ -162,10 +162,10 @@ def get_all_ipv4_interfaces() -> List[str]:
 
     iface_names = []
 
-    for ifname in netifaces.interfaces():
-        address_info = netifaces.ifaddresses(ifname)
-        if address_info is not None and netifaces.AF_INET in address_info:
-            if len(address_info[netifaces.AF_INET]) > 0:
+    for ifname in nativeinterfaces.list_interfaces():
+        address_info = nativeinterfaces.interface_addresses(ifname)
+        if address_info is not None and socket.AF_INET in address_info:
+            if len(address_info[socket.AF_INET]) > 0:
                 iface_names.append(ifname)
 
     return iface_names
@@ -180,10 +180,10 @@ def get_all_ipv6_interfaces() -> List[str]:
 
     iface_names = []
 
-    for ifname in netifaces.interfaces():
-        address_info = netifaces.ifaddresses(ifname)
-        if address_info is not None and netifaces.AF_INET6 in address_info:
-            if len(address_info[netifaces.AF_INET6]) > 0:
+    for ifname in nativeinterfaces.list_interfaces():
+        address_info = nativeinterfaces.interface_addresses(ifname)
+        if address_info is not None and socket.AF_INET6 in address_info:
+            if len(address_info[socket.AF_INET6]) > 0:
                 iface_names.append(ifname)
 
     return iface_names
@@ -199,9 +199,9 @@ def get_ipv4_address(ifname: str) -> Union[str, None]:
     """
     addr = None
 
-    address_info = netifaces.ifaddresses(ifname)
-    if address_info is not None and netifaces.AF_INET in address_info:
-        addr_info = address_info[netifaces.AF_INET][0]
+    address_info = nativeinterfaces.interface_addresses(ifname)
+    if address_info is not None and socket.AF_INET in address_info:
+        addr_info = address_info[socket.AF_INET][0]
         addr = addr_info["addr"]
 
     return addr
@@ -216,9 +216,9 @@ def get_ipv6_address(ifname: str) -> Union[str, None]:
     """
     addr = None
 
-    address_info = netifaces.ifaddresses(ifname)
-    if address_info is not None and netifaces.AF_INET6 in address_info:
-        addr_info = address_info[netifaces.AF_INET6][0]
+    address_info = nativeinterfaces.interface_addresses(ifname)
+    if address_info is not None and socket.AF_INET6 in address_info:
+        addr_info = address_info[socket.AF_INET6][0]
         addr = addr_info["addr"]
 
     return addr
@@ -304,9 +304,9 @@ def get_interface_for_ip(if_addr: str) -> str:
 
     if_name = None
 
-    iface_name_list = [ iface for iface in netifaces.interfaces() ]
+    iface_name_list = [ iface for iface in nativeinterfaces.list_interfaces() ]
     for iface in iface_name_list:
-        if_address_table = netifaces.ifaddresses(iface)
+        if_address_table = nativeinterfaces.interface_addresses(iface)
         if addr_family in if_address_table:
             faddr_list = if_address_table[addr_family]
             for faddr in faddr_list:
@@ -329,7 +329,7 @@ def get_interface_class_table() -> Dict[str, InterfaceClass]:
 
     results = {}
 
-    iface_name_list = [ iface for iface in netifaces.interfaces() ]
+    iface_name_list = [ iface for iface in nativeinterfaces.list_interfaces() ]
     for ifname in iface_name_list:
         ifcls = get_interface_class(ifname)
         results[ifname] = ifcls

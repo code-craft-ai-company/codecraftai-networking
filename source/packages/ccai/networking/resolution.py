@@ -13,10 +13,10 @@ __credits__ = []
 from typing import Any, List, Optional
 
 import socket as _socket
-import netifaces
 import os
 import subprocess
 
+from ccai.networking import nativeinterfaces
 from ccai.networking.constants import REGEX_IPV4_COMPONENTS, REGEX_IPV6_COMPONENTS
 
 # ---------------------------------------------------------------------------
@@ -358,15 +358,15 @@ def refresh_arp_table(
     if exclude_interfaces is None:
         exclude_interfaces = ["lo"]
 
-    interface_list = include_interfaces if include_interfaces is not None else netifaces.interfaces()
+    interface_list = include_interfaces if include_interfaces is not None else nativeinterfaces.list_interfaces()
     
     for ifname in interface_list:
         if ifname not in exclude_interfaces:
-            address_info = netifaces.ifaddresses(ifname)
+            address_info = nativeinterfaces.interface_addresses(ifname)
             if address_info is not None:
                 # Only attempt to refresh ARP using IPv4 addresses
-                if netifaces.AF_INET in address_info:
-                    for addr_info in address_info[netifaces.AF_INET]:
+                if _socket.AF_INET in address_info:
+                    for addr_info in address_info[_socket.AF_INET]:
                         ifaddress = addr_info.get("addr")
                         if is_ipv4_address(ifaddress):
                             prefix = ".".join(ifaddress.split(".")[:-1])
