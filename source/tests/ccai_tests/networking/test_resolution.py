@@ -10,7 +10,7 @@ import unittest
 from io import StringIO
 import unittest.mock
 
-import netifaces
+import socket
 
 from ccai.networking import resolution
 
@@ -203,15 +203,15 @@ class RefreshArpTableTests(unittest.TestCase):
         self.popen_patcher = unittest.mock.patch("ccai.networking.resolution.subprocess.Popen")
         self.mock_popen = self.popen_patcher.start()
         self.mock_popen.return_value = unittest.mock.MagicMock()
-        self.ifaddrs_patcher = unittest.mock.patch("netifaces.ifaddresses")
+        self.ifaddrs_patcher = unittest.mock.patch("ccai.networking.nativeinterfaces.interface_addresses")
         self.mock_ifaddresses = self.ifaddrs_patcher.start()
         self.interfaces_patcher = unittest.mock.patch(
-            "netifaces.interfaces", return_value=["eth0", "lo"]
+            "ccai.networking.nativeinterfaces.list_interfaces", return_value=["eth0", "lo"]
         )
         self.interfaces_patcher.start()
 
         self.mock_ifaddresses.return_value = {
-            netifaces.AF_INET: [{"addr": "192.168.1.100"}]
+            socket.AF_INET: [{"addr": "192.168.1.100"}]
         }
         return
 

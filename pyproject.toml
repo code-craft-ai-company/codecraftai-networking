@@ -1,6 +1,6 @@
 [project]
 name = "codecraftai-networking"
-version = "1.2.0"
+version = "1.3.0"
 description = "Code Craft AI - Networking Package"
 readme = "README.rst"
 license = "LicenseRef-CodeCraftAI-Source-Available"
@@ -14,7 +14,6 @@ classifiers = [
 ]
 requires-python = ">=3.10,<4.0"
 dependencies = [
-    "netifaces>=0.11.0,<0.12.0",
     "codecraftai-foundations<2.0.0",
 ]
 

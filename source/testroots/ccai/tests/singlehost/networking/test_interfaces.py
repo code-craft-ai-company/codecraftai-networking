@@ -10,8 +10,6 @@ import socket
 from typing import Dict, Tuple
 from unittest import mock
 
-import netifaces
-
 from ccai.networking import interfaces
 from ccai.networking.interfaces import InterfaceClass
 
@@ -19,20 +17,20 @@ from ccai.networking.interfaces import InterfaceClass
 def _establish_ipv4_env() -> Tuple[Dict[str, dict], "mock._patch", "mock._patch"]:
     """
         Replicate the original ``GetAllIpv4InterfacesTests.setUp`` by starting
-        patches for ``netifaces.interfaces`` and ``netifaces.ifaddresses`` that
+        patches for ``nativeinterfaces.list_interfaces`` and ``nativeinterfaces.interface_addresses`` that
         serve a fixed interface name list and a mutable address map.
 
         :returns: A tuple of the mutable address map and the two started
                   patchers, the latter so callers can stop them during teardown.
     """
     ifnames = ["eth0", "lo", "wlan0"]
-    interfaces_patcher = mock.patch("netifaces.interfaces", return_value=ifnames)
+    interfaces_patcher = mock.patch("ccai.networking.nativeinterfaces.list_interfaces", return_value=ifnames)
     interfaces_patcher.start()
 
     addr_map = {
-        "eth0": {netifaces.AF_INET: [{"addr": "192.168.1.10"}]},
-        "lo": {netifaces.AF_INET: [{"addr": "127.0.0.1"}]},
-        "wlan0": {netifaces.AF_INET6: [{"addr": "fe80::1"}]},
+        "eth0": {socket.AF_INET: [{"addr": "192.168.1.10"}]},
+        "lo": {socket.AF_INET: [{"addr": "127.0.0.1"}]},
+        "wlan0": {socket.AF_INET6: [{"addr": "fe80::1"}]},
     }
 
     def fake_ifaddresses(ifname: str) -> dict:
@@ -40,7 +38,7 @@ def _establish_ipv4_env() -> Tuple[Dict[str, dict], "mock._patch", "mock._patch"
         return rtnval
 
     ifaddresses_patcher = mock.patch(
-        "netifaces.ifaddresses", side_effect=fake_ifaddresses
+        "ccai.networking.nativeinterfaces.interface_addresses", side_effect=fake_ifaddresses
     )
     ifaddresses_patcher.start()
 
@@ -51,23 +49,23 @@ def _establish_ipv4_env() -> Tuple[Dict[str, dict], "mock._patch", "mock._patch"
 def _establish_ipv6_env() -> Tuple[Dict[str, dict], "mock._patch", "mock._patch"]:
     """
         Replicate the original ``GetAllIpv6InterfacesTests.setUp`` by starting
-        patches for ``netifaces.interfaces`` and ``netifaces.ifaddresses`` that
+        patches for ``nativeinterfaces.list_interfaces`` and ``nativeinterfaces.interface_addresses`` that
         serve a fixed interface name list and a mutable address map.
 
         :returns: A tuple of the mutable address map and the two started
                   patchers, the latter so callers can stop them during teardown.
     """
     ifnames = ["eth0", "lo", "wlan0"]
-    interfaces_patcher = mock.patch("netifaces.interfaces", return_value=ifnames)
+    interfaces_patcher = mock.patch("ccai.networking.nativeinterfaces.list_interfaces", return_value=ifnames)
     interfaces_patcher.start()
 
     addr_map = {
         "eth0": {
-            netifaces.AF_INET: [{"addr": "192.168.1.10"}],
-            netifaces.AF_INET6: [{"addr": "fe80::1"}],
+            socket.AF_INET: [{"addr": "192.168.1.10"}],
+            socket.AF_INET6: [{"addr": "fe80::1"}],
         },
-        "lo": {netifaces.AF_INET: [{"addr": "127.0.0.1"}]},
-        "wlan0": {netifaces.AF_INET6: [{"addr": "fe80::2"}]},
+        "lo": {socket.AF_INET: [{"addr": "127.0.0.1"}]},
+        "wlan0": {socket.AF_INET6: [{"addr": "fe80::2"}]},
     }
 
     def fake_ifaddresses(ifname: str) -> dict:
@@ -75,7 +73,7 @@ def _establish_ipv6_env() -> Tuple[Dict[str, dict], "mock._patch", "mock._patch"
         return rtnval
 
     ifaddresses_patcher = mock.patch(
-        "netifaces.ifaddresses", side_effect=fake_ifaddresses
+        "ccai.networking.nativeinterfaces.interface_addresses", side_effect=fake_ifaddresses
     )
     ifaddresses_patcher.start()
 
@@ -139,7 +137,7 @@ def test_skips_interfaces_with_empty_ipv4_list() -> None:
     """
     addr_map, interfaces_patcher, ifaddresses_patcher = _establish_ipv4_env()
     try:
-        addr_map["eth0"] = {netifaces.AF_INET: []}
+        addr_map["eth0"] = {socket.AF_INET: []}
         rtnval = interfaces.get_all_ipv4_interfaces()
         assert "eth0" not in rtnval
     finally:
@@ -169,7 +167,7 @@ def test_returns_empty_list_when_no_ipv6() -> None:
     """
     addr_map, interfaces_patcher, ifaddresses_patcher = _establish_ipv6_env()
     try:
-        addr_map["eth0"] = {netifaces.AF_INET: [{"addr": "192.168.1.10"}]}
+        addr_map["eth0"] = {socket.AF_INET: [{"addr": "192.168.1.10"}]}
         del addr_map["wlan0"]
         rtnval = interfaces.get_all_ipv6_interfaces()
         assert rtnval == []
@@ -183,8 +181,8 @@ def test_returns_ipv4_address_when_available() -> None:
     """
         Verify the first IPv4 address is returned for an interface.
     """
-    addr_table = {netifaces.AF_INET: [{"addr": "10.0.0.5"}]}
-    with mock.patch("netifaces.ifaddresses", return_value=addr_table):
+    addr_table = {socket.AF_INET: [{"addr": "10.0.0.5"}]}
+    with mock.patch("ccai.networking.nativeinterfaces.interface_addresses", return_value=addr_table):
         rtnval = interfaces.get_ipv4_address("eth0")
     assert rtnval == "10.0.0.5"
     return
@@ -194,8 +192,8 @@ def test_returns_none_when_no_ipv4() -> None:
     """
         Verify ``None`` is returned when the interface has no IPv4 address.
     """
-    addr_table = {netifaces.AF_INET6: [{"addr": "fe80::1"}]}
-    with mock.patch("netifaces.ifaddresses", return_value=addr_table):
+    addr_table = {socket.AF_INET6: [{"addr": "fe80::1"}]}
+    with mock.patch("ccai.networking.nativeinterfaces.interface_addresses", return_value=addr_table):
         rtnval = interfaces.get_ipv4_address("eth0")
     assert rtnval is None
     return
@@ -206,10 +204,10 @@ def test_returns_ipv6_address_when_available() -> None:
         Verify the first IPv6 address is returned for an interface.
     """
     addr_table = {
-        netifaces.AF_INET6: [{"addr": "fe80::1"}],
-        netifaces.AF_INET: [{"addr": "127.0.0.1"}],
+        socket.AF_INET6: [{"addr": "fe80::1"}],
+        socket.AF_INET: [{"addr": "127.0.0.1"}],
     }
-    with mock.patch("netifaces.ifaddresses", return_value=addr_table):
+    with mock.patch("ccai.networking.nativeinterfaces.interface_addresses", return_value=addr_table):
         rtnval = interfaces.get_ipv6_address("eth0")
     assert rtnval == "fe80::1"
     return
@@ -219,8 +217,8 @@ def test_returns_none_when_no_ipv6() -> None:
     """
         Verify ``None`` is returned when the interface has no IPv6 address.
     """
-    addr_table = {netifaces.AF_INET: [{"addr": "10.0.0.5"}]}
-    with mock.patch("netifaces.ifaddresses", return_value=addr_table):
+    addr_table = {socket.AF_INET: [{"addr": "10.0.0.5"}]}
+    with mock.patch("ccai.networking.nativeinterfaces.interface_addresses", return_value=addr_table):
         rtnval = interfaces.get_ipv6_address("eth0")
     assert rtnval is None
     return
@@ -302,8 +300,8 @@ def test_returns_matching_interface_name() -> None:
     addr_info = [(socket.AF_INET, None, None, None, None)]
     ifnames = ["lo", "eth0"]
     addr_map = {
-        "lo": {netifaces.AF_INET: [{"addr": "127.0.0.1"}]},
-        "eth0": {netifaces.AF_INET: [{"addr": "10.0.0.5"}]},
+        "lo": {socket.AF_INET: [{"addr": "127.0.0.1"}]},
+        "eth0": {socket.AF_INET: [{"addr": "10.0.0.5"}]},
     }
 
     def fake_ifaddresses(ifname: str) -> dict:
@@ -311,8 +309,8 @@ def test_returns_matching_interface_name() -> None:
         return rtnval
 
     with mock.patch("socket.getaddrinfo", return_value=addr_info), mock.patch(
-        "netifaces.interfaces", return_value=ifnames
-    ), mock.patch("netifaces.ifaddresses", side_effect=fake_ifaddresses):
+        "ccai.networking.nativeinterfaces.list_interfaces", return_value=ifnames
+    ), mock.patch("ccai.networking.nativeinterfaces.interface_addresses", side_effect=fake_ifaddresses):
         rtnval = interfaces.get_interface_for_ip("10.0.0.5")
 
     assert rtnval == "eth0"
@@ -326,7 +324,7 @@ def test_returns_none_when_no_match() -> None:
     addr_info = [(socket.AF_INET, None, None, None, None)]
     ifnames = ["lo"]
     addr_map = {
-        "lo": {netifaces.AF_INET: [{"addr": "127.0.0.1"}]},
+        "lo": {socket.AF_INET: [{"addr": "127.0.0.1"}]},
     }
 
     def fake_ifaddresses(ifname: str) -> dict:
@@ -334,8 +332,8 @@ def test_returns_none_when_no_match() -> None:
         return rtnval
 
     with mock.patch("socket.getaddrinfo", return_value=addr_info), mock.patch(
-        "netifaces.interfaces", return_value=ifnames
-    ), mock.patch("netifaces.ifaddresses", side_effect=fake_ifaddresses):
+        "ccai.networking.nativeinterfaces.list_interfaces", return_value=ifnames
+    ), mock.patch("ccai.networking.nativeinterfaces.interface_addresses", side_effect=fake_ifaddresses):
         rtnval = interfaces.get_interface_for_ip("10.0.0.5")
 
     assert rtnval is None
@@ -439,7 +437,7 @@ def test_table_aggregates_classes_for_each_interface() -> None:
         )
         return rtnval
 
-    with mock.patch("netifaces.interfaces", return_value=ifnames), mock.patch(
+    with mock.patch("ccai.networking.nativeinterfaces.list_interfaces", return_value=ifnames), mock.patch(
         "ccai.networking.interfaces.get_interface_class",
         side_effect=fake_get_class,
     ):

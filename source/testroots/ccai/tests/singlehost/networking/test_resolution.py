@@ -10,7 +10,7 @@
 from io import StringIO
 from unittest import mock
 
-import netifaces
+import socket
 
 from ccai.networking import resolution
 
@@ -18,7 +18,7 @@ from ccai.networking import resolution
 def _establish_refresh_arp_env() -> dict:
     """
         Replicate the ``RefreshArpTableTests.setUp`` fixture by starting the
-        ``os.system``, ``netifaces.ifaddresses`` and ``netifaces.interfaces``
+        ``os.system``, ``nativeinterfaces.interface_addresses`` and ``nativeinterfaces.list_interfaces``
         patchers and seeding the interface address return value.
 
         :returns: A dictionary carrying the started patchers and their mocks so
@@ -26,15 +26,15 @@ def _establish_refresh_arp_env() -> dict:
     """
     os_patcher = mock.patch("os.system")
     mock_os_system = os_patcher.start()
-    ifaddrs_patcher = mock.patch("netifaces.ifaddresses")
+    ifaddrs_patcher = mock.patch("ccai.networking.nativeinterfaces.interface_addresses")
     mock_ifaddresses = ifaddrs_patcher.start()
     interfaces_patcher = mock.patch(
-        "netifaces.interfaces", return_value=["eth0", "lo"]
+        "ccai.networking.nativeinterfaces.list_interfaces", return_value=["eth0", "lo"]
     )
     interfaces_patcher.start()
 
     mock_ifaddresses.return_value = {
-        netifaces.AF_INET: [{"addr": "192.168.1.100"}]
+        socket.AF_INET: [{"addr": "192.168.1.100"}]
     }
 
     env = {
